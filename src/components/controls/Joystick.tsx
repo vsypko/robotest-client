@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useEventContext } from '../../contexts/eventContext'
+import { useMission } from '../../contexts/missionContext'
 
 export default function Joystick() {
   const { triggerKeyEvent } = useEventContext()
   const [isPointerDown, setIsPointerDown] = useState(false)
   const [keypressed, setKeypressed] = useState<string>('')
+  const { mission } = useMission()
 
   function handlePointerDown(key: string) {
     setIsPointerDown(true)
@@ -22,7 +24,7 @@ export default function Joystick() {
     if (isPointerDown) {
       interval = setInterval(() => {
         triggerKeyEvent(keypressed, 'keydown')
-      }, 50)
+      }, 30)
     }
 
     return () => {
@@ -59,7 +61,11 @@ export default function Joystick() {
             <i className="fas fa-circle-left"></i>
           </button>
 
-          <button className="text-5xl m-4 text-emerald-500 rounded-full active:scale-90 active:text-emerald-400">
+          <button
+            className={`text-5xl m-4 ${
+              mission.open ? 'text-orange-600' : 'text-emerald-500'
+            } rounded-full active:scale-90 active:text-emerald-400`}
+          >
             <i className="fas fa-power-off"></i>
           </button>
           <button

@@ -22,11 +22,14 @@ export default function R2D2(props: JSX.IntrinsicElements['group']) {
 
   const { socket } = useWebSocket()
   const { robot, updatePosition } = useMission()
-  // const [pose, setPose] = useState({ x: 0, z: 0, angle: 0 })
 
   useEffect(() => {
     if (group.current) {
-      const controlOff = keyControl(socket!, robot.id, robot.pose_x, robot.pose_z, robot.angle, updatePosition)
+      const controlOff = keyControl(socket!, robot.id, robot.pose_x, robot.pose_z, robot.angle)
+      socket!.onmessage = (msg) => {
+        const { id, x, z, angle } = JSON.parse(msg.data)
+        updatePosition(id, x, z, angle)
+      }
       return controlOff
     }
   })

@@ -1,7 +1,7 @@
-export function movement(keycode: string, x: number, z: number): { x: number; z: number; angle: number } {
+export function movement(keycode: string, x: number, z: number, currentAngl: number) {
   let dx = 0
   let dz = 0
-  let angle = 0
+  let angle = currentAngl
   const border = 18.64
   const step = 0.1
 

@@ -5,6 +5,7 @@ const initialMissionData = {
     id: 0,
     name: '',
     description: '',
+    open: false,
   },
   robot: {
     id: 0,
@@ -14,6 +15,8 @@ const initialMissionData = {
     pose_z: 0,
     angle: 0,
   },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  updateMissionStatus: (_isOpen: boolean) => {},
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updatePosition: (_id: number, _pose_x: number, _pose_z: number, _angle: number) => {},
 }
@@ -29,6 +32,7 @@ export const MissionContextProvider = ({ children }: { children: ReactNode }) =>
       id: 0,
       name: '',
       description: '',
+      open: false,
     },
     robot: {
       id: 0,
@@ -38,6 +42,11 @@ export const MissionContextProvider = ({ children }: { children: ReactNode }) =>
       pose_z: 0,
       angle: 0,
     },
+    updateMissionStatus: (isOpen: boolean) =>
+      setMission((prev) => ({
+        ...prev,
+        mission: { ...prev.mission, open: isOpen },
+      })),
     updatePosition: (id: number, pose_x: number, pose_z: number, angle: number) =>
       setMission((prev) => ({
         ...prev,

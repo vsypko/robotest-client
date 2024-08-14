@@ -34,16 +34,20 @@ export default function BB8(props: JSX.IntrinsicElements['group']) {
 
   useEffect(() => {
     if (group.current) {
-      const controlOff = keyControl(socket!, robot.id, robot.pose_x, robot.pose_z, robot.angle, updatePosition)
+      const controlOff = keyControl(socket!, robot.id, robot.pose_x, robot.pose_z, robot.angle)
+      socket!.onmessage = (msg) => {
+        const { id, x, z, angle } = JSON.parse(msg.data)
+        updatePosition(id, x, z, angle)
+      }
       return controlOff
     }
   })
 
   useFrame(({ clock }) => {
     if (rotativObject.current && group.current) {
-      if (group.current.position.z !== robot.pose_z) rotativObject.current.rotation.x = -clock.getElapsedTime() * 3
-      if (group.current.position.x - robot.pose_x > 0) rotativObject.current.rotation.z = -clock.getElapsedTime() * 3
-      if (group.current.position.x - robot.pose_x < 0) rotativObject.current.rotation.z = clock.getElapsedTime() * 3
+      if (group.current.position.z !== robot.pose_z) rotativObject.current.rotation.x = -clock.getElapsedTime() * 5
+      if (group.current.position.x - robot.pose_x > 0) rotativObject.current.rotation.z = -clock.getElapsedTime() * 5
+      if (group.current.position.x - robot.pose_x < 0) rotativObject.current.rotation.z = clock.getElapsedTime() * 5
       group.current.rotation.y = robot.angle
       rotativObject.current.rotation.y = robot.angle
       group.current.position.x = robot.pose_x
