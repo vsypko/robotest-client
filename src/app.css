@@ -1,0 +1,15 @@
+@import url('./assets/fontawesome/css/all.min.css');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Roboto';
+  src: local('Roboto'), url('./src/assets/font_roboto/Roboto-Regular.ttf') format('truetype');
+}
+
+#root {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}

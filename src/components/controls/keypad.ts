@@ -1,0 +1,49 @@
+import { movement } from '../../utils/movement'
+
+export function keyControl(
+  socket: WebSocket,
+  id: number,
+  currentX: number,
+  currentZ: number,
+  currentAngl: number,
+  updatePosition: (_id: number, _pose_x: number, _pose_z: number, _angle: number) => void
+) {
+  function handleKeyPress(e: KeyboardEvent) {
+    e.preventDefault()
+
+    const { x, z, angle } = movement(e.key, currentX, currentZ)
+    socket.send(
+      JSON.stringify({
+        method: 'reposition',
+        id,
+        x,
+        z,
+        angle,
+      })
+    )
+    updatePosition(id, x, z, angle)
+  }
+
+  function handleKeyUp(e: KeyboardEvent) {
+    e.preventDefault()
+    socket.send(
+      JSON.stringify({
+        method: 'reposition',
+        id,
+        x: currentX,
+        z: currentZ,
+        angle: currentAngl,
+      })
+    )
+  }
+
+  window.addEventListener('keydown', handleKeyPress, true)
+  window.addEventListener('keyup', handleKeyUp, true)
+
+  function controlOff() {
+    window.removeEventListener('keydown', handleKeyPress, true)
+    window.removeEventListener('keyup', handleKeyUp, true)
+  }
+
+  return controlOff
+}
