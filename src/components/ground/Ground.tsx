@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from 'react'
+import { Suspense, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import BB8 from '../robots/BB8'
@@ -7,9 +7,7 @@ import R2D2 from '../robots/R2D2'
 import { Field } from './Field'
 
 export default function Ground() {
-  const [isRobo, setIsRobo] = useState(false)
-  // const robotUrl = 'BB8'
-  // const Robot = lazy(() => import(/* @vite-ignore */ `../robots/${robotUrl}`))
+  const [isRobo] = useState(false)
 
   return (
     <Canvas
