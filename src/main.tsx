@@ -4,7 +4,6 @@ import App from './App.tsx'
 import './app.css'
 import { WebSocketProvider } from './contexts/WebSocketContext.tsx'
 import { MissionContextProvider } from './contexts/missionContext.tsx'
-import { EventProvider } from './contexts/eventContext.tsx'
 
 if (
   localStorage.theme === 'dark' ||
@@ -17,11 +16,9 @@ root!.setAttribute('class', 'bg-slate-200 dark:bg-slate-800')
 createRoot(root!).render(
   <StrictMode>
     <MissionContextProvider>
-      <EventProvider>
-        <WebSocketProvider url={import.meta.env.VITE_WS_URL}>
-          <App />
-        </WebSocketProvider>
-      </EventProvider>
+      <WebSocketProvider url={import.meta.env.VITE_WS_URL}>
+        <App />
+      </WebSocketProvider>
     </MissionContextProvider>
   </StrictMode>
 )

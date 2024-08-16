@@ -4,7 +4,7 @@ import { useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 
-import { keyControl } from '../controls/keypad'
+// import { keyControl } from '../controls/keypad'
 import { useWebSocket } from '../../contexts/WebSocketContext'
 import { useMission } from '../../contexts/missionContext'
 
@@ -33,13 +33,11 @@ export default function BB8(props: JSX.IntrinsicElements['group']) {
   const { robot, updatePosition } = useMission()
 
   useEffect(() => {
-    if (group.current) {
-      const controlOff = keyControl(socket!, robot.id, robot.pose_x, robot.pose_z, robot.angle)
-      socket!.onmessage = (msg) => {
+    if (group.current && socket) {
+      socket.onmessage = (msg) => {
         const { id, x, z, angle } = JSON.parse(msg.data)
         updatePosition(id, x, z, angle)
       }
-      return controlOff
     }
   })
 

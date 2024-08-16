@@ -1,4 +1,4 @@
-import { movement } from '../../utils/movement'
+import { movement } from './utils/movement'
 
 export function keyControl(socket: WebSocket, id: number, currentX: number, currentZ: number, currentAngl: number) {
   function handleKeyPress(e: KeyboardEvent) {
