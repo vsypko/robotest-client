@@ -1,5 +1,5 @@
 import Ground from './components/ground/Ground'
-import Joystick from './components/controls/Joystick'
+import Joystick from './components/Joystick'
 import Position from './components/Position'
 import Missions from './components/Missions'
 
