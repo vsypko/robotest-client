@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useMission } from '../contexts/missionContext'
+
 import { movement } from '../utils/movement'
 import { useWebSocket } from '../contexts/WebSocketContext'
+import { useRobot } from '../contexts/RobotContext'
 
 export default function Joystick() {
   const [isPointerDown, setIsPointerDown] = useState(false)
   const [keypressed, setKeypressed] = useState<string>('')
-  const { mission, robot } = useMission()
+
+  const robot = useRobot()
+
   const { socket } = useWebSocket()
 
   //If the component did mount, then enable the socket event listener--------
@@ -90,7 +93,17 @@ export default function Joystick() {
 
   return (
     <div className="absolute w-full flex justify-center bottom-4 text-slate-200 text-4xl">
-      <div className="block">
+      <div className="flex flex-col">
+        <div className="dark:text-slate-200 w-full items-start text-2xl p-2">
+          <div className="flex">
+            <p className="text-lime-600">Robot position X: </p>
+            <p className="pl-2">{robot.pose_x ? robot.pose_x.toFixed(2) : 0}</p>
+          </div>
+          <div className="flex">
+            <p className="text-lime-600">Robot position Z: </p>
+            <p className="pl-2 ">{robot.pose_z ? robot.pose_z.toFixed(2) : 0}</p>
+          </div>
+        </div>
         <div className="flex w-full justify-center">
           <button
             onPointerDown={() => handlePointerDown('ArrowUp')}
@@ -119,10 +132,10 @@ export default function Joystick() {
 
           <button
             className={`text-5xl m-4 ${
-              mission.open ? 'text-orange-600' : 'text-emerald-500'
+              robot.id && socket ? 'text-orange-600' : 'text-emerald-500'
             } rounded-full active:scale-90 active:text-emerald-400`}
           >
-            <i className="fas fa-power-off"></i>
+            <i className="fas fa-wifi"></i>
           </button>
 
           <button

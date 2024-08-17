@@ -1,14 +1,30 @@
-import { Suspense, useState } from 'react'
+import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import BB8 from '../robots/BB8'
 import R2D2 from '../robots/R2D2'
 
 import { Field } from './Field'
+import { useRobot } from '../../contexts/RobotContext'
+
+function Robot() {
+  const robot = useRobot()
+  let Robot: JSX.Element | null = null
+  switch (robot.name) {
+    case 'R2D2':
+      Robot = <R2D2 />
+      break
+    case 'BB8':
+      Robot = <BB8 />
+      break
+    default:
+      Robot = null
+      break
+  }
+  return Robot
+}
 
 export default function Ground() {
-  const [isRobo] = useState(false)
-
   return (
     <Canvas
       shadows
@@ -23,7 +39,7 @@ export default function Ground() {
 
       <Suspense fallback={null}>
         <Field />
-        {!isRobo ? <BB8 /> : <R2D2 />}
+        <Robot />
       </Suspense>
     </Canvas>
   )

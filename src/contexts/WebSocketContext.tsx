@@ -1,5 +1,4 @@
 import { useContext, createContext, ReactNode, useEffect, useRef } from 'react'
-import { useMission } from './missionContext'
 
 type WebSocketContextType = {
   socket: WebSocket | null
@@ -15,7 +14,6 @@ type WebSocketProviderProps = {
 }
 
 export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => {
-  const { updateMissionStatus } = useMission()
   const socketRef = useRef<WebSocket | null>(null)
 
   if (!socketRef.current) {
@@ -24,14 +22,14 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
 
   const onOpen = () => {
     console.log('WebSocket connection is open')
-    updateMissionStatus(true)
+    // updateMissionStatus(true)
   }
 
   const onMessage = () => {}
 
   const onClose = () => {
     console.log('WebSocket connection is closed')
-    updateMissionStatus(false)
+    // updateMissionStatus(false)
   }
 
   useEffect(() => {
@@ -48,7 +46,6 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
       socket.removeEventListener('message', onMessage)
       socket.removeEventListener('close', onClose)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return <WebSocketContext.Provider value={{ socket: socketRef.current }}>{children}</WebSocketContext.Provider>

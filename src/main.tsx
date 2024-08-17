@@ -3,7 +3,8 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './app.css'
 import { WebSocketProvider } from './contexts/WebSocketContext.tsx'
-import { MissionContextProvider } from './contexts/missionContext.tsx'
+import { RobotProvider } from './contexts/RobotContext.tsx'
+// import { MissionContextProvider } from './contexts/missionContext.tsx'
 
 if (
   localStorage.theme === 'dark' ||
@@ -15,10 +16,10 @@ const root = document.getElementById('root')
 root!.setAttribute('class', 'bg-slate-200 dark:bg-slate-800')
 createRoot(root!).render(
   <StrictMode>
-    <MissionContextProvider>
+    <RobotProvider>
       <WebSocketProvider url={import.meta.env.VITE_WS_URL}>
         <App />
       </WebSocketProvider>
-    </MissionContextProvider>
+    </RobotProvider>
   </StrictMode>
 )

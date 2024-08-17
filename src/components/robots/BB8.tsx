@@ -4,9 +4,8 @@ import { useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 
-// import { keyControl } from '../controls/keypad'
 import { useWebSocket } from '../../contexts/WebSocketContext'
-import { useMission } from '../../contexts/missionContext'
+import { useRobot, useRobotDispatch } from '../../contexts/RobotContext'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -30,13 +29,14 @@ export default function BB8(props: JSX.IntrinsicElements['group']) {
   const { nodes, materials } = useGLTF('/bb8.glb') as GLTFResult
 
   const { socket } = useWebSocket()
-  const { robot, updatePosition } = useMission()
+  const robot = useRobot()
+  const dispatch = useRobotDispatch()
 
   useEffect(() => {
     if (group.current && socket) {
       socket.onmessage = (msg) => {
         const { id, x, z, angle } = JSON.parse(msg.data)
-        updatePosition(id, x, z, angle)
+        dispatch({ type: 'update', payload: { id, pose_x: x, pose_z: z, angle } })
       }
     }
   })
