@@ -58,7 +58,7 @@ export default function MissionForm({ mission, setMission, robots, setOpen, onSa
           className="rounded-full cuconsole.log(name)rsor-pointer bg-slate-300 dark:bg-slate-800 px-2 ml-4 opacity-90 hover:opacity-100 active:scale-90 shadow-sm shadow-slate-600 active:shadow-none transition-all"
           onChange={onChange}
         >
-          <option value={''}>--no robot selecteed--</option>
+          <option value={0}>--no robot selecteed--</option>
           {robots &&
             robots.map((robot: RobotType) => (
               <option key={robot.id} value={robot.id} selected={robot.id === mission.robot_id}>

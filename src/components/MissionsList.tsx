@@ -87,7 +87,7 @@ export function RobotsList() {
   }
 
   const onSave = async () => {
-    if (!selectedMission.name || (!selectedMission.description && !selectedMission.robot_id)) return
+    if (!selectedMission.name || !selectedMission.description || !selectedMission.robot_id) return
     if (!selectedMission.id) {
       const res = await query('/mission', {
         method: 'POST',
@@ -108,11 +108,9 @@ export function RobotsList() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          data: {
-            name: selectedMission.name,
-            description: selectedMission.description,
-            robot_id: selectedMission.robot_id,
-          },
+          name: selectedMission.name,
+          description: selectedMission.description,
+          robot_id: selectedMission.robot_id,
         }),
       })
       console.log(res.msg)
