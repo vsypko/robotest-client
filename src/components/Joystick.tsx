@@ -16,7 +16,6 @@ export default function Joystick() {
 
   useEffect(() => {
     function handleKeyPress(e: KeyboardEvent) {
-      e.preventDefault()
       if (socket) {
         const { x, z, angle } = movement(e.key, robot.pose_x, robot.pose_z, robot.angle)
         socket.send(
@@ -31,8 +30,7 @@ export default function Joystick() {
       }
     }
 
-    function handleKeyUp(e: KeyboardEvent) {
-      e.preventDefault()
+    function handleKeyUp() {
       if (socket) {
         socket.send(
           JSON.stringify({
