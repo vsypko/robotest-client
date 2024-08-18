@@ -1,9 +1,3 @@
-# Let's create a markdown file with the translated content.
-
-# Markdown content with the same structure
-
-markdown_content = """
-
 # Server-Side Application Development
 
 ## Basic Architecture of the Server-Side Application:
@@ -50,12 +44,3 @@ markdown_content = """
 - **main.tsx:** High-order component that sets up context providers.
 - **fetchdata.ts:** Service function for fetching data.
 - **movement.ts:** Utility function that calculates the next coordinates of robots based on events.
-  """
-
-# Writing the content to a markdown file
-
-markdown_file_path = '/mnt/data/architecture_description.md'
-with open(markdown_file_path, 'w') as file:
-file.write(markdown_content)
-
-markdown_file_path
