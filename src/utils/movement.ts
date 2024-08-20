@@ -10,35 +10,45 @@ export function movement(keycode: string, x: number, z: number, currentAngl: num
       dx = -step
       dz = 0
       angle = Math.PI / 2
+      if (x < -border) {
+        x -= dx
+        break
+      }
+      x += dx
       break
     case 'ArrowRight':
       dx = step
       dz = 0
       angle = -Math.PI / 2
+      if (x > border) {
+        x -= dx
+        break
+      }
+      x += dx
       break
     case 'ArrowUp':
       dx = 0
       dz = -step
       angle = 0
+      if (z < -border) {
+        z -= dz
+        break
+      }
+      z += dz
       break
     case 'ArrowDown':
       dx = 0
       dz = step
       angle = Math.PI
+      if (z > border) {
+        z -= dz
+        break
+      }
+      z += dz
       break
 
     default:
       break
-  }
-  if (x <= border && x >= -border) {
-    x += dx
-  } else {
-    x -= dx
-  }
-  if (z <= border && z >= -border) {
-    z += dz
-  } else {
-    z -= dz
   }
 
   return { x, z, angle }

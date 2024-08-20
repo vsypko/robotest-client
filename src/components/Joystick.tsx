@@ -12,7 +12,7 @@ export default function Joystick() {
 
   const { socket } = useWebSocket()
 
-  //If the component did mount, then enable the socket event listener--------
+  //If the component did mount, then enable the keypad event listener --------
 
   useEffect(() => {
     function handleKeyPress(e: KeyboardEvent) {
