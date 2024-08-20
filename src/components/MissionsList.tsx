@@ -37,7 +37,7 @@ const initialRobotData: RobotType = {
   angle: 0,
 }
 
-export function RobotsList() {
+export function MissionsList() {
   const [missions, setMissions] = useState<MissionType[]>([])
   const [selectedMission, setSelectedMission] = useState<MissionType>(initialMissionData)
   const [robots, setRobots] = useState<RobotType[]>([])
@@ -138,9 +138,9 @@ export function RobotsList() {
   }
 
   return (
-    <div className="w-full text-lg text-slate-200 p-2">
+    <div className="w-full text-lg dark:text-slate-200 text-slate-800 p-2">
       <h1 className="font-bold italic">MISSIONS:</h1>
-      <ul className="space-y-1 min-h-40 overflow-y-auto snap-y rounded-2xl bg-slate-900 p-1 relative">
+      <ul className="space-y-1 min-h-40 overflow-y-auto snap-y rounded-2xl bg-slate-300 dark:bg-slate-900 p-1 relative">
         {missions &&
           missions.length > 0 &&
           missions.map((mission) => (
@@ -214,7 +214,7 @@ export function RobotsList() {
       {!formIsOpen && (
         <button
           onClick={handleNewMission}
-          className="w-full mt-1 px-2 rounded-full bg-teal-800 opacity-70 hover:opacity-100 active:scale-90"
+          className="w-full mt-1 px-2 rounded-full dark:bg-teal-800 bg-teal-500 opacity-70 hover:opacity-100 active:scale-90"
         >
           <i className="fas fa-plus mr-2" />
           <span>CREATE NEW MISSION</span>

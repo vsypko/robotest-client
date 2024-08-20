@@ -16,7 +16,7 @@ export default function MissionForm({ mission, setMission, robots, setOpen, onSa
   }
 
   return (
-    <div className="w-full flex flex-col bg-slate-900 rounded-2xl p-1 relative">
+    <div className="w-full flex flex-col bg-slate-300 dark:bg-slate-900 rounded-2xl p-1 relative">
       <button
         type="button"
         onClick={() => {
@@ -46,7 +46,7 @@ export default function MissionForm({ mission, setMission, robots, setOpen, onSa
           name="description"
           onChange={onChange}
           value={mission!.description}
-          className={`w-full bg-slate-800 text-base rounded-xl p-1 opacity-90 focus:outline-none hover:opacity-100 focus:opacity-100 overflow-auto peer`}
+          className={`w-full dark:bg-slate-800 bg-slate-400 text-base rounded-xl p-1 opacity-90 focus:outline-none hover:opacity-100 focus:opacity-100 overflow-auto peer`}
         />
         <div className="absolute w-0 transition-all duration-300 ease-in-out border-slate-500 bottom-0 peer-focus:w-auto peer-focus:border-b right-1 left-1" />
       </div>
@@ -69,7 +69,7 @@ export default function MissionForm({ mission, setMission, robots, setOpen, onSa
       </div>
       <button
         onClick={onSave}
-        className="w-full mt-4 px-2 rounded-full bg-teal-800 opacity-70 hover:opacity-100 active:scale-90"
+        className="w-full mt-4 px-2 rounded-full bg-teal-500 dark:bg-teal-800 opacity-70 hover:opacity-100 active:scale-90"
       >
         <i className="fas fa-floppy-disk mr-4" />
         <span>SAVE MISSION</span>
