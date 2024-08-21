@@ -138,7 +138,7 @@ export function MissionsList() {
   }
 
   return (
-    <div className="w-full text-lg dark:text-slate-200 text-slate-800 p-2">
+    <div className="w-full text-lg dark:text-slate-200 text-slate-800 p-2 z-10">
       <h1 className="font-bold italic">MISSIONS:</h1>
       <ul className="space-y-1 min-h-40 overflow-y-auto snap-y rounded-2xl bg-slate-300 dark:bg-slate-900 p-1 relative">
         {missions &&

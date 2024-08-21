@@ -1,6 +1,7 @@
 import Ground from './components/ground/Ground'
 import Joystick from './components/Joystick'
 import { MissionsList } from './components/MissionsList'
+import MobileView from './components/MobileView'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         </div>
 
         <div className="md:hidden flex justify-center bg-none z-10">
+          <MobileView />
           <Joystick />
         </div>
       </div>
