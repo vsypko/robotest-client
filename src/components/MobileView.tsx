@@ -4,7 +4,11 @@ import { MissionsList } from './MissionsList'
 export default function MobileView() {
   const [isMissionOpened, setMissionsOpened] = useState(false)
   return (
-    <div className="left-0 top-0 flex flex-col w-full absolute h-2/3 overflow-scroll">
+    <div
+      className={`left-0 top-0 flex flex-col w-full absolute h-2/3 overflow-scroll ${
+        isMissionOpened ? 'z-10' : '-z-10'
+      }`}
+    >
       <div className="sticky top-0 left-0">
         <button
           className=" md:hidden m-2 opacity-75 hover:opacity-100 active:scale-90 text-3xl "

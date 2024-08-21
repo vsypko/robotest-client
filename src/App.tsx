@@ -17,7 +17,7 @@ function App() {
           <Ground />
         </div>
 
-        <div className="md:hidden flex justify-center bg-none z-10">
+        <div className="md:hidden flex justify-center bg-none">
           <MobileView />
           <Joystick />
         </div>
