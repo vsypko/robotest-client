@@ -90,7 +90,7 @@ export default function Joystick() {
   }, [isPointerDown, keypressed, triggerKeyEvent])
 
   return (
-    <div className="absolute w-full flex justify-center bottom-4 text-slate-200 text-4xl">
+    <div className="absolute w-full flex justify-center bottom-4 text-slate-200 text-4xl z-10">
       <div className="flex flex-col">
         <div className="text-slate-600 dark:text-slate-200 w-full items-start text-2xl p-2">
           <div className="flex">

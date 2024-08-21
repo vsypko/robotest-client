@@ -50,15 +50,15 @@ export default function MissionForm({ mission, setMission, robots, setOpen, onSa
         />
         <div className="absolute w-0 transition-all duration-300 ease-in-out border-slate-500 bottom-0 peer-focus:w-auto peer-focus:border-b right-1 left-1" />
       </div>
-      <div className="flex w-full relative px-1">
+      <div className="flex relative w-full">
         <label htmlFor="robot">Robot:</label>
         <select
           id="robot_id"
           name="robot_id"
-          className="rounded-full cuconsole.log(name)rsor-pointer bg-slate-300 dark:bg-slate-800 px-2 ml-4 opacity-90 hover:opacity-100 active:scale-90 shadow-sm shadow-slate-600 active:shadow-none transition-all"
+          className="rounded-full  cursor-pointer bg-slate-300 dark:bg-slate-800 px-2 ml-2 opacity-90 hover:opacity-100 active:scale-90 shadow-sm shadow-slate-600 active:shadow-none transition-all"
           onChange={onChange}
         >
-          <option value={0}>--no robot selecteed--</option>
+          <option value={0}>⤵ select robot</option>
           {robots &&
             robots.map((robot: RobotType) => (
               <option key={robot.id} value={robot.id} selected={robot.id === mission.robot_id}>
