@@ -3,7 +3,7 @@ export function movement(keycode: string, x: number, z: number, currentAngl: num
   let dz = 0
   let angle = currentAngl
   const border = id == 4 ? 18.08 : 18.64
-  const step = 0.1
+  const step = id == 4 ? 0.15 : 0.1
 
   switch (keycode) {
     case 'ArrowLeft':

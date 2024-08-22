@@ -46,9 +46,9 @@ export default function BB9(props: JSX.IntrinsicElements['group']) {
 
   useFrame(({ clock }) => {
     if (rotative.current && group.current) {
-      if (group.current.position.z !== robot.pose_z) rotative.current.rotation.x = -clock.getElapsedTime() * 3
-      if (group.current.position.x - robot.pose_x > 0) rotative.current.rotation.z = -clock.getElapsedTime() * 3
-      if (group.current.position.x - robot.pose_x < 0) rotative.current.rotation.z = clock.getElapsedTime() * 3
+      if (group.current.position.z !== robot.pose_z) rotative.current.rotation.x = -clock.getElapsedTime() * 4
+      if (group.current.position.x - robot.pose_x > 0) rotative.current.rotation.z = -clock.getElapsedTime() * 4
+      if (group.current.position.x - robot.pose_x < 0) rotative.current.rotation.z = clock.getElapsedTime() * 4
       group.current.rotation.y = robot.angle
       rotative.current.rotation.y = robot.angle
       group.current.position.x = robot.pose_x
