@@ -1,8 +1,8 @@
-export function movement(keycode: string, x: number, z: number, currentAngl: number) {
+export function movement(keycode: string, x: number, z: number, currentAngl: number, id: number) {
   let dx = 0
   let dz = 0
   let angle = currentAngl
-  const border = 18.64
+  const border = id == 4 ? 18.08 : 18.64
   const step = 0.1
 
   switch (keycode) {

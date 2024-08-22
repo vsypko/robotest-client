@@ -97,4 +97,4 @@ export default function BB8(props: JSX.IntrinsicElements['group']) {
   )
 }
 
-useGLTF.preload('/robot.glb')
+useGLTF.preload('/bb8.glb')

@@ -17,7 +17,7 @@ export default function Joystick() {
   useEffect(() => {
     function handleKeyPress(e: KeyboardEvent) {
       if (socket) {
-        const { x, z, angle } = movement(e.key, robot.pose_x, robot.pose_z, robot.angle)
+        const { x, z, angle } = movement(e.key, robot.pose_x, robot.pose_z, robot.angle, robot.id)
         socket.send(
           JSON.stringify({
             method: 'reposition',
@@ -56,7 +56,7 @@ export default function Joystick() {
   //Function to fire relevant keypad event when pointer (mouse button) event is fired. -------------
   const triggerKeyEvent = useCallback((key: string, type: 'keydown' | 'keyup') => {
     const event = new KeyboardEvent(type, { key })
-    document.body.dispatchEvent(event)
+    window.dispatchEvent(event)
   }, [])
 
   //Pointer (mouse button) down event handler ----------------------------

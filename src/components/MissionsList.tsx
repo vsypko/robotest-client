@@ -62,17 +62,15 @@ export function MissionsList() {
   function handleMissionSelect(mission: MissionType) {
     if (selectedMission.id === mission.id) return
     setSelectedMission({ ...mission, inAction: false })
-    const foundRobot = robots.find((item) => item.id === mission.robot_id)
-    setSelectedRobot(foundRobot!)
+    const robot = robots.find((item) => item.id === mission.robot_id)
+    if (robot) setSelectedRobot(robot)
     dispatch({ type: 'set', payload: initialRobotData })
   }
 
   function handleMissionActive(id: number) {
     if (selectedMission && id === selectedMission.id) {
       const robot = robots.find((robot) => robot.id === selectedMission.robot_id)
-
       if (robot) dispatch({ type: 'set', payload: robot })
-
       const status = selectedMission!.inAction
       if (status) {
         dispatch({ type: 'set', payload: initialRobotData })
@@ -144,29 +142,25 @@ export function MissionsList() {
         {missions &&
           missions.length > 0 &&
           missions.map((mission) => (
-            <li
-              key={mission.id}
-              className={`w-full snap-start cursor-pointer group text-slate-800 dark:text-slate-200`}
-            >
-              <div className="grid grid-cols-12 gap-1 px-1 rounded-full group:hover:bg-teal-400 dark:group-hover:bg-teal-800">
-                <div className="grid col-span-1 place-items-center ">
-                  <i
-                    className={`transition-all ${
-                      selectedMission?.id === mission.id ? 'text-teal-500 fas fa-circle-dot' : 'far fa-circle'
-                    }`}
-                  ></i>
-                </div>
+            <li key={mission.id} className={`w-full cursor-pointer group text-slate-800 dark:text-slate-200`}>
+              <div className="flex w-full items-center place-items-start px-1 rounded-full group:hover:bg-teal-400 dark:group-hover:bg-teal-800">
+                <i
+                  className={`transition-all mr-2 ${
+                    selectedMission?.id === mission.id ? 'text-teal-500 fas fa-circle-dot' : 'far fa-circle'
+                  }`}
+                ></i>
+
                 <button
                   onClick={() => handleMissionSelect(mission)}
-                  className={`grid col-span-11 place-items-start ${
-                    selectedMission?.id === mission.id ? 'opacity-100' : 'opacity-75'
-                  }`}
+                  className={`w-full text-start ${selectedMission?.id === mission.id ? 'opacity-100' : 'opacity-75'}`}
                 >
                   {mission.name}
                 </button>
               </div>
 
-              <div className={`text-base ${selectedMission?.id === mission.id ? 'grid col-span-12' : 'hidden'}`}>
+              <div
+                className={`text-base text-justify ${selectedMission?.id === mission.id ? 'flex flex-col' : 'hidden'}`}
+              >
                 <p>{mission.description}</p>
 
                 <p>
@@ -177,6 +171,7 @@ export function MissionsList() {
                 </p>
 
                 <div className="flex justify-end text-2xl">
+                  {/* Play/pause mission button ------------------------------------------------*/}
                   <button
                     onClick={() => handleMissionActive(mission.id)}
                     className="px-3 opacity-75 hover:opacity-100 active:scale-90"

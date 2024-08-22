@@ -14,7 +14,6 @@ export default function MissionForm({ mission, setMission, robots, setOpen, onSa
     const value = event.target.value
     setMission({ ...mission, [event.target.name]: value })
   }
-
   return (
     <div className="w-full flex flex-col bg-slate-300 dark:bg-slate-900 rounded-2xl p-1 relative">
       <button
@@ -57,11 +56,12 @@ export default function MissionForm({ mission, setMission, robots, setOpen, onSa
           name="robot_id"
           className="rounded-full  cursor-pointer bg-slate-300 dark:bg-slate-800 px-2 ml-2 opacity-90 hover:opacity-100 active:scale-90 shadow-sm shadow-slate-600 active:shadow-none transition-all"
           onChange={onChange}
+          value={mission.robot_id}
         >
           <option value={0}>⤵ select robot</option>
           {robots &&
             robots.map((robot: RobotType) => (
-              <option key={robot.id} value={robot.id} selected={robot.id === mission.robot_id}>
+              <option key={robot.id} value={robot.id}>
                 {robot.name + ' model: ' + robot.model_name}
               </option>
             ))}

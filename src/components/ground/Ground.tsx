@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import BB8 from '../robots/BB8'
+import BB9 from '../robots/BB9'
 import R2D2 from '../robots/R2D2'
 
 import { Field } from './Field'
@@ -16,6 +17,9 @@ function Robot() {
       break
     case 'BB8':
       Robot = <BB8 />
+      break
+    case 'BB9':
+      Robot = <BB9 />
       break
     default:
       Robot = null
