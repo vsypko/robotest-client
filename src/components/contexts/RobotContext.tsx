@@ -1,5 +1,5 @@
-import { useContext, createContext, ReactNode, useReducer, Dispatch } from 'react'
-import { RobotType } from '../components/MissionsList'
+import { useContext, createContext, useReducer, Dispatch, ReactElement } from 'react'
+import { RobotType } from '../utils/types'
 
 interface RobotAction {
   type: 'set' | 'update'
@@ -50,7 +50,7 @@ export function useRobotDispatch() {
   return useContext(RobotDispatchContext)
 }
 
-export function RobotProvider({ children }: { children: ReactNode }) {
+export function RobotProvider({ children }: { children: ReactElement }) {
   const [robot, dispatch] = useReducer(robotReducer, initialRobotData)
 
   return (

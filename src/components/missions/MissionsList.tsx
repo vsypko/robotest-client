@@ -1,41 +1,8 @@
 import { useEffect, useState } from 'react'
-import { query } from '../utils/fetchdata'
-import { useRobotDispatch } from '../contexts/RobotContext'
+import { query } from '../../utils/fetchdata'
+import { useRobotDispatch } from '../../contexts/RobotContext'
 import MissionForm from './MissionForm'
-
-export interface MissionType {
-  id: number
-  name: string
-  description: string
-  robot_id: number
-  inAction?: boolean
-}
-
-export interface RobotType {
-  id: number
-  name: string
-  model_name: string
-  pose_x: number
-  pose_z: number
-  angle: number
-}
-
-const initialMissionData: MissionType = {
-  id: 0,
-  name: '',
-  description: '',
-  robot_id: 0,
-  inAction: false,
-}
-
-const initialRobotData: RobotType = {
-  id: 0,
-  name: '',
-  model_name: '',
-  pose_x: 0,
-  pose_z: 0,
-  angle: 0,
-}
+import { initialMissionData, initialRobotData, MissionType, RobotType } from '../../utils/types'
 
 export function MissionsList() {
   const [missions, setMissions] = useState<MissionType[]>([])
@@ -46,18 +13,21 @@ export function MissionsList() {
 
   const dispatch = useRobotDispatch()
 
+  //Getting all lists of missions and robots from DB ----------------------------------------------
+
   useEffect(() => {
     const data = async () => {
       const res = await query('/robots', { method: 'GET' })
       setRobots(res)
       const result = await query('/missions', { method: 'GET' })
       if (result.length > 0) {
-        // const missionsArray = result.map((item: MissionType) => ({ ...item, inAction: false }))
         setMissions(result)
       }
     }
     data()
   }, [])
+
+  //Select mission function ----------------------------------------------------------
 
   function handleMissionSelect(mission: MissionType) {
     if (selectedMission.id === mission.id) return
@@ -67,11 +37,13 @@ export function MissionsList() {
     dispatch({ type: 'set', payload: initialRobotData })
   }
 
+  //Starting o closing mission: loading mission's Robot, or remove it. -----------------------
+
   function handleMissionActive(id: number) {
     if (selectedMission && id === selectedMission.id) {
       const robot = robots.find((robot) => robot.id === selectedMission.robot_id)
       if (robot) dispatch({ type: 'set', payload: robot })
-      const status = selectedMission!.inAction
+      const status = selectedMission.inAction
       if (status) {
         dispatch({ type: 'set', payload: initialRobotData })
       }
@@ -83,6 +55,8 @@ export function MissionsList() {
     setSelectedMission(initialMissionData)
     setFormIsOpen(true)
   }
+
+  //Inserting new or updating existing mission ---------------------------------------------
 
   const onSave = async () => {
     if (!selectedMission.name || !selectedMission.description || !selectedMission.robot_id) return
@@ -113,7 +87,7 @@ export function MissionsList() {
       })
       console.log(res.msg)
     }
-
+    //Getting renewed lists of robots and missions --------------------------------
     const result = await query('/missions', { method: 'GET' })
     if (result.length > 0) {
       const newMissionsList = result.map((item: MissionType) => ({ ...item, inAction: false }))
@@ -123,6 +97,7 @@ export function MissionsList() {
     setSelectedRobot(initialRobotData)
   }
 
+  // Delete mission function --------------------------------------------
   async function handleDeleteMission() {
     const res = await query(`/mission/${selectedMission?.id}`, { method: 'DELETE' })
     console.log(res)
@@ -134,6 +109,8 @@ export function MissionsList() {
       setMissions(newMissionsList)
     }
   }
+
+  //--------------------------------------------------------------------
 
   return (
     <div className="w-full text-lg dark:text-slate-200 text-slate-800 md:p-2 p-1 z-20">

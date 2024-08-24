@@ -1,11 +1,10 @@
 import * as THREE from 'three'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 
-import { useWebSocket } from '../../contexts/WebSocketContext'
-import { useRobot, useRobotDispatch } from '../../contexts/RobotContext'
+import { useRobot } from '../../contexts/RobotContext'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -28,18 +27,8 @@ export default function BB8(props: JSX.IntrinsicElements['group']) {
 
   const { nodes, materials } = useGLTF('/bb8.glb') as GLTFResult
 
-  const { socket } = useWebSocket()
+  //get robot data from context and rerender ---------------------------------
   const robot = useRobot()
-  const dispatch = useRobotDispatch()
-
-  useEffect(() => {
-    if (group.current && socket) {
-      socket.onmessage = (msg) => {
-        const { id, x, z, angle } = JSON.parse(msg.data)
-        dispatch({ type: 'update', payload: { id, pose_x: x, pose_z: z, angle } })
-      }
-    }
-  })
 
   useFrame(({ clock }) => {
     if (rotativObject.current && group.current) {

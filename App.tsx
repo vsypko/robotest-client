@@ -1,7 +1,7 @@
-import Ground from './components/ground/Ground'
-import Joystick from './components/Joystick'
-import { MissionsList } from './components/MissionsList'
-import MobileView from './components/MobileView'
+import Court from './components/court/Court'
+import Joystick from './components/controls/Joystick'
+import { MissionsList } from './components/missions/MissionsList'
+import MobileView from './components/missions/MobileView'
 
 function App() {
   return (
@@ -14,7 +14,7 @@ function App() {
       </div>
       <div className="w-full md:w-4/5 h-full rounded-2xl border-slate-800 dark:border-slate-200 border relative">
         <div className="h-full overflow-visible">
-          <Ground />
+          <Court />
         </div>
 
         <div className="md:hidden flex justify-center bg-none">

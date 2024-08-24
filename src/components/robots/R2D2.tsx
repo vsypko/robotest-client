@@ -1,10 +1,9 @@
 import * as THREE from 'three'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { useFrame } from '@react-three/fiber'
-import { useWebSocket } from '../../contexts/WebSocketContext'
-import { useRobot, useRobotDispatch } from '../../contexts/RobotContext'
+import { useRobot } from '../../contexts/RobotContext'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -19,18 +18,8 @@ export default function R2D2(props: JSX.IntrinsicElements['group']) {
   const { nodes, materials } = useGLTF('/r2d2.glb') as GLTFResult
   const group = useRef<THREE.Group | null>(null)
 
-  const { socket } = useWebSocket()
+  //get robot data from context and rerender ---------------------------------
   const robot = useRobot()
-  const dispatch = useRobotDispatch()
-
-  useEffect(() => {
-    if (group.current && socket) {
-      socket.onmessage = (msg) => {
-        const { id, x, z, angle } = JSON.parse(msg.data)
-        dispatch({ type: 'update', payload: { id, pose_x: x, pose_z: z, angle } })
-      }
-    }
-  })
 
   useFrame(() => {
     if (group.current) {
@@ -42,7 +31,13 @@ export default function R2D2(props: JSX.IntrinsicElements['group']) {
 
   return (
     <group {...props} dispose={null} ref={group} scale={[4, 4, 4]} position={[0, -0.55, 0]}>
-      <mesh castShadow receiveShadow geometry={nodes.Object_2.geometry} material={materials.R2D2Tex} />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Object_2.geometry}
+        material={materials.R2D2Tex}
+        rotation={[0, Math.PI, 0]}
+      />
     </group>
   )
 }

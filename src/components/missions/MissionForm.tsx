@@ -1,15 +1,15 @@
-import { ChangeEvent, SetStateAction, Dispatch } from 'react'
-import { MissionType, RobotType } from './MissionsList'
+import { ChangeEvent, SetStateAction, Dispatch, ReactElement } from 'react'
+import { MissionType, RobotType } from '../../utils/types'
 
 interface PropsType {
   mission: MissionType
   setMission: Dispatch<SetStateAction<MissionType>>
   robots: RobotType[]
-  setOpen: Dispatch<React.SetStateAction<boolean>>
+  setOpen: Dispatch<SetStateAction<boolean>>
   onSave: () => Promise<void>
 }
 
-export default function MissionForm({ mission, setMission, robots, setOpen, onSave }: PropsType): JSX.Element {
+export default function MissionForm({ mission, setMission, robots, setOpen, onSave }: PropsType): ReactElement {
   const onChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const value = event.target.value
     setMission({ ...mission, [event.target.name]: value })
