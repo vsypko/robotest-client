@@ -1,5 +1,5 @@
 import { useContext, createContext, ReactNode, useEffect, useRef } from 'react'
-import { useRobotDispatch } from './RobotContext'
+import { useRobotDispatch, useRobot } from './RobotContext'
 
 // type WebSocketContextType = {
 //   socket: WebSocket | null
@@ -17,6 +17,7 @@ type WebSocketProviderProps = {
 export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => {
   const socketRef = useRef<WebSocket | null>(null)
   const dispatch = useRobotDispatch()
+  const robot = useRobot()
 
   if (!socketRef.current) {
     socketRef.current = new WebSocket(url)
@@ -28,7 +29,9 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
 
   const onMessage = (msg: MessageEvent) => {
     const { method, id, x, z, angle } = JSON.parse(msg.data)
-    if (method === 'newposition') dispatch({ type: 'update', payload: { id, pose_x: x, pose_z: z, angle } })
+    if (id === robot.id) {
+      if (method === 'newposition') dispatch({ type: 'update', payload: { id, pose_x: x, pose_z: z, angle } })
+    }
   }
 
   const onClose = () => {
