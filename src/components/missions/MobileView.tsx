@@ -1,7 +1,14 @@
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { MissionsList } from './MissionsList'
+import { MissionType } from '../../utils/types'
 
-export default function MobileView() {
+export default function MobileView({
+  selectedMission,
+  setSelectedMission,
+}: {
+  selectedMission: MissionType
+  setSelectedMission: Dispatch<SetStateAction<MissionType>>
+}) {
   const [isMissionOpened, setMissionsOpened] = useState(false)
   return (
     <div className="left-0 top-0 flex flex-col w-full absolute">
@@ -19,7 +26,7 @@ export default function MobileView() {
         </button>
       </div>
 
-      {isMissionOpened && <MissionsList />}
+      {isMissionOpened && <MissionsList selectedMission={selectedMission} setSelectedMission={setSelectedMission} />}
     </div>
   )
 }

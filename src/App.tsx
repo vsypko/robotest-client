@@ -21,7 +21,7 @@ function App() {
         </div>
 
         <div className="md:hidden flex justify-center bg-none">
-          <MobileView />
+          <MobileView selectedMission={selectedMission} setSelectedMission={setSelectedMission} />
           <Joystick selectedMission={selectedMission} />
         </div>
       </div>
