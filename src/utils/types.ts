@@ -3,7 +3,8 @@ export interface MissionType {
   name: string
   description: string
   robot_id: number
-  inAction?: boolean
+  selected?: boolean
+  active?: boolean
 }
 
 export interface RobotType {
@@ -15,12 +16,19 @@ export interface RobotType {
   angle: number
 }
 
+export interface RobotPositionType {
+  id: number
+  x: number
+  z: number
+  angle: number
+}
+
 export const initialMissionData: MissionType = {
   id: 0,
   name: '',
   description: '',
   robot_id: 0,
-  inAction: false,
+  active: false,
 }
 
 export const initialRobotData: RobotType = {

@@ -3,7 +3,7 @@ import { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { useFrame } from '@react-three/fiber'
-import { useRobot } from '../../contexts/RobotContext'
+import { useRobots } from '../../contexts/RobotContext'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -19,10 +19,10 @@ export default function R2D2(props: JSX.IntrinsicElements['group']) {
   const group = useRef<THREE.Group | null>(null)
 
   //get robot data from context and rerender ---------------------------------
-  const robot = useRobot()
+  const robot = useRobots().find((robot) => Number(robot.id) === 1)
 
   useFrame(() => {
-    if (group.current) {
+    if (group.current && robot) {
       group.current.rotation.y = robot.angle
       group.current.position.z = robot.pose_z
       group.current.position.x = robot.pose_x

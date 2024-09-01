@@ -1,60 +1,63 @@
 import { useContext, createContext, useReducer, Dispatch, ReactElement } from 'react'
-import { RobotType } from '../utils/types'
+import { RobotPositionType, RobotType } from '../utils/types'
 
 interface RobotAction {
-  type: 'set' | 'update'
-  payload: RobotType | { id: number; pose_x: number; pose_z: number; angle: number }
+  type: 'add' | 'update' | 'remove'
+  payload: RobotType | RobotPositionType
 }
 
-const initialRobotData: RobotType = {
-  id: 0,
-  name: '',
-  model_name: '',
-  pose_x: 0,
-  pose_z: 0,
-  angle: 0,
-}
+type RobotState = RobotType[]
 
-function robotReducer(robot: RobotType, action: RobotAction): RobotType {
+function robotReducer(state: RobotState, action: RobotAction): RobotState {
   switch (action.type) {
-    case 'set': {
-      return action.payload as RobotType
+    case 'add': {
+      const robot = action.payload as RobotType
+      return [...state, robot]
     }
 
     case 'update': {
-      return {
-        ...robot,
-        id: action.payload.id,
-        pose_x: action.payload.pose_x,
-        pose_z: action.payload.pose_z,
-        angle: action.payload.angle,
-      }
+      const { id, x, z, angle } = action.payload as RobotPositionType
+      console.log(id, state)
+      return state.map((robot) => (robot.id === id ? { ...robot, pose_x: x, pose_z: z, angle: angle } : robot))
+    }
+
+    case 'remove': {
+      const { id } = action.payload as RobotType
+      return state.filter((robot) => robot.id !== id)
     }
 
     default: {
-      throw Error('Unknown action: ' + action.type)
+      throw new Error('Unknown action: ' + action.type)
     }
   }
 }
 
-const RobotContext = createContext<RobotType>(initialRobotData)
-const RobotDispatchContext = createContext<Dispatch<RobotAction>>(() => {})
+const RobotContext = createContext<RobotState>([])
+const RobotDispatchContext = createContext<Dispatch<RobotAction> | undefined>(undefined)
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function useRobot() {
-  return useContext(RobotContext)
+export function useRobots() {
+  const context = useContext(RobotContext)
+  if (context === undefined) {
+    throw new Error('useRobotsMap must be used within a RobotProvider')
+  }
+  return context
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function useRobotDispatch() {
-  return useContext(RobotDispatchContext)
+export function useRobotsDispatch() {
+  const context = useContext(RobotDispatchContext)
+  if (context === undefined) {
+    throw new Error('useRobotsMapDispatch must be used within a RobotProvider')
+  }
+  return context
 }
 
 export function RobotProvider({ children }: { children: ReactElement }) {
-  const [robot, dispatch] = useReducer(robotReducer, initialRobotData)
+  const [activeRobots, dispatch] = useReducer(robotReducer, [])
 
   return (
-    <RobotContext.Provider value={robot}>
+    <RobotContext.Provider value={activeRobots}>
       <RobotDispatchContext.Provider value={dispatch}>{children}</RobotDispatchContext.Provider>
     </RobotContext.Provider>
   )

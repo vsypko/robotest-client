@@ -25,6 +25,7 @@ export default function JoystickButton({ keypressed, icon }: { keypressed: strin
       triggerKeyEvent('keyup')
     }
   }
+
   //Set interval to keep firing keydown event --------------------
   useEffect(() => {
     let interval: number | undefined
@@ -46,7 +47,7 @@ export default function JoystickButton({ keypressed, icon }: { keypressed: strin
     <button
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
-      onMouseLeave={handlePointerUp}
+      onPointerOut={handlePointerUp}
       className="text-5xl text-emerald-500 rounded-full active:scale-90 hover:text-emerald-400"
     >
       <i className={icon}></i>

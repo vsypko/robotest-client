@@ -1,11 +1,15 @@
-import { Suspense } from 'react'
+// import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 
 import Field from './Field'
-import SelectedRobot from '../robots/Robot'
+import { useRobots } from '../../contexts/RobotContext'
+import Robot from '../robots/Robot'
+import { Suspense } from 'react'
 
 export default function Court() {
+  const robots = useRobots()
+
   return (
     <Canvas
       shadows
@@ -19,9 +23,13 @@ export default function Court() {
         <orthographicCamera attach="shadow-camera" args={[-50, 50, 50, -50, 0.01, 10000]} />
       </directionalLight>
       <Field />
-      <Suspense fallback={null}>
-        <SelectedRobot />
-      </Suspense>
+
+      {robots &&
+        robots.map((robot) => (
+          <Suspense fallback={null} key={robot.id}>
+            <Robot robot={robot.name} />
+          </Suspense>
+        ))}
     </Canvas>
   )
 }

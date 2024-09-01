@@ -4,7 +4,7 @@ import { useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 
-import { useRobot } from '../../contexts/RobotContext'
+import { useRobots } from '../../contexts/RobotContext'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -22,24 +22,23 @@ type GLTFResult = GLTF & {
 }
 
 export default function BB8(props: JSX.IntrinsicElements['group']) {
+  //get robot data from context and rerender ---------------------------------
+  const robot = useRobots().find((robot) => Number(robot.id) === 2)
+
   const group = useRef<THREE.Group | null>(null)
   const rotativObject = useRef<THREE.Group | null>(null)
-
   const { nodes, materials } = useGLTF('/bb8.glb') as GLTFResult
 
-  //get robot data from context and rerender ---------------------------------
-  const robot = useRobot()
-
   useFrame(({ clock }) => {
-    if (rotativObject.current && group.current) {
-      if (group.current.position.z !== robot.pose_z) rotativObject.current.rotation.x = -clock.getElapsedTime() * 5
-      if (group.current.position.x - robot.pose_x > 0) rotativObject.current.rotation.z = -clock.getElapsedTime() * 5
-      if (group.current.position.x - robot.pose_x < 0) rotativObject.current.rotation.z = clock.getElapsedTime() * 5
-      group.current.rotation.y = robot.angle
-      rotativObject.current.rotation.y = robot.angle
-      group.current.position.x = robot.pose_x
-      group.current.position.z = robot.pose_z
-    }
+    if (!rotativObject.current || !group.current || !robot) return
+
+    if (group.current.position.z !== robot.pose_z) rotativObject.current.rotation.x = -clock.getElapsedTime() * 5
+    if (group.current.position.x - robot.pose_x > 0) rotativObject.current.rotation.z = -clock.getElapsedTime() * 5
+    if (group.current.position.x - robot.pose_x < 0) rotativObject.current.rotation.z = clock.getElapsedTime() * 5
+    group.current.rotation.y = robot.angle
+    rotativObject.current.rotation.y = robot.angle
+    group.current.position.x = robot.pose_x
+    group.current.position.z = robot.pose_z
   })
 
   return (

@@ -1,17 +1,26 @@
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { query } from '../../utils/fetchdata'
-import { useRobotDispatch } from '../../contexts/RobotContext'
+import { useRobots, useRobotsDispatch } from '../../contexts/RobotContext'
 import MissionForm from './MissionForm'
-import { initialMissionData, initialRobotData, MissionType, RobotType } from '../../utils/types'
+import { initialMissionData, MissionType, RobotType } from '../../utils/types'
 
-export function MissionsList() {
+export function MissionsList({
+  selectedMission,
+  setSelectedMission,
+}: {
+  selectedMission: MissionType
+  setSelectedMission: Dispatch<SetStateAction<MissionType>>
+}) {
   const [missions, setMissions] = useState<MissionType[]>([])
-  const [selectedMission, setSelectedMission] = useState<MissionType>(initialMissionData)
-  const [robots, setRobots] = useState<RobotType[]>([])
-  const [selectedRobot, setSelectedRobot] = useState<RobotType>(initialRobotData)
-  const [formIsOpen, setFormIsOpen] = useState(false)
 
-  const dispatch = useRobotDispatch()
+  const [robots, setRobots] = useState<RobotType[]>([])
+  const [selectedRobot, setSelectedRobot] = useState<RobotType | undefined>(undefined)
+  const [formIsOpen, setFormIsOpen] = useState(false)
+  const [isInZero, setIsInZero] = useState(false)
+  const [isBusy, setIsBusy] = useState(false)
+
+  const activeRobots = useRobots()
+  const dispatch = useRobotsDispatch()
 
   //Getting all lists of missions and robots from DB ----------------------------------------------
 
@@ -19,9 +28,11 @@ export function MissionsList() {
     const data = async () => {
       const res = await query('/robots', { method: 'GET' })
       setRobots(res)
+
       const result = await query('/missions', { method: 'GET' })
-      if (result.length > 0) {
-        setMissions(result)
+      if (result && result.length > 0) {
+        const missionsList = result.map((item: MissionType) => ({ ...item, active: false, selected: false }))
+        setMissions(missionsList)
       }
     }
     data()
@@ -30,25 +41,39 @@ export function MissionsList() {
   //Select mission function ----------------------------------------------------------
 
   function handleMissionSelect(mission: MissionType) {
+    setIsInZero(false)
+    setIsBusy(false)
     if (selectedMission.id === mission.id) return
-    setSelectedMission({ ...mission, inAction: false })
+    setMissions(missions.map((item) => ({ ...item, selected: mission.id === item.id ? true : false })))
+    setSelectedMission({ ...mission, selected: true })
     const robot = robots.find((item) => item.id === mission.robot_id)
     if (robot) setSelectedRobot(robot)
-    dispatch({ type: 'set', payload: initialRobotData })
   }
 
   //Starting o closing mission: loading mission's Robot, or remove it. -----------------------
 
-  function handleMissionActive(id: number) {
-    if (selectedMission && id === selectedMission.id) {
-      const robot = robots.find((robot) => robot.id === selectedMission.robot_id)
-      if (robot) dispatch({ type: 'set', payload: robot })
-      const status = selectedMission.inAction
-      if (status) {
-        dispatch({ type: 'set', payload: initialRobotData })
+  function handleMissionActive(mission: MissionType) {
+    const status = mission.active
+    const isRobotOnZero = activeRobots.some((robot) => Math.abs(robot.pose_x) <= 0.5 && Math.abs(robot.pose_z) <= 0.5)
+    const isRobotBusy = activeRobots.some((robot) => robot.name === selectedRobot?.name)
+    const robot = activeRobots.find((robot) => robot.id === mission.robot_id)
+
+    if (status && robot) {
+      dispatch({ type: 'remove', payload: robot })
+    } else {
+      if (isRobotOnZero) {
+        setIsInZero(true)
+        return
       }
-      setSelectedMission({ ...selectedMission, inAction: !status })
+      if (isRobotBusy) {
+        setIsBusy(true)
+        return
+      }
+
+      dispatch({ type: 'add', payload: selectedRobot! })
     }
+    setMissions(missions.map((item) => ({ ...item, active: item.id === mission.id ? !status : item.active })))
+    setSelectedMission({ ...selectedMission, active: !status })
   }
 
   function handleNewMission() {
@@ -94,7 +119,7 @@ export function MissionsList() {
       setMissions(newMissionsList)
     }
     setSelectedMission(initialMissionData)
-    setSelectedRobot(initialRobotData)
+    setSelectedRobot(undefined)
   }
 
   // Delete mission function --------------------------------------------
@@ -141,23 +166,19 @@ export function MissionsList() {
                 <p>{mission.description}</p>
 
                 <p>
-                  Mission selected robot:{' '}
+                  Mission selected robot:
                   <span className="font-bold italic text-lime-500">
-                    {selectedRobot.name + ' model: ' + selectedRobot.model_name}
+                    {' ' + selectedRobot?.name + ' model.' + selectedRobot?.model_name}
                   </span>
                 </p>
 
                 <div className="flex justify-end text-2xl">
                   {/* Play/pause mission button ------------------------------------------------*/}
                   <button
-                    onClick={() => handleMissionActive(mission.id)}
+                    onClick={() => handleMissionActive(mission)}
                     className="px-3 opacity-75 hover:opacity-100 active:scale-90"
                   >
-                    <i
-                      className={`fas ${
-                        selectedMission?.inAction ? 'fa-pause text-orange-400' : 'fa-play text-emerald-500'
-                      }`}
-                    />
+                    <i className={`fas ${mission.active ? 'fa-pause text-orange-400' : 'fa-play text-emerald-500'}`} />
                   </button>
 
                   <button
@@ -183,6 +204,8 @@ export function MissionsList() {
             </li>
           ))}
       </ul>
+      {isInZero && <span className="text-orange-500">The zero position for robot initiation is occupied</span>}
+      {isBusy && <span className="text-orange-500">The robot is involved in another mission</span>}
       {!formIsOpen && (
         <button
           onClick={handleNewMission}

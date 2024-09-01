@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
-import { useRobot } from '../../contexts/RobotContext'
+import { useRobots } from '../../contexts/RobotContext'
 import { useFrame } from '@react-three/fiber'
 
 type GLTFResult = GLTF & {
@@ -31,10 +31,9 @@ export default function BB9(props: JSX.IntrinsicElements['group']) {
   const { nodes, materials } = useGLTF('/bb9.glb') as GLTFResult
 
   //get robot data from context and rerender ---------------------------------
-  const robot = useRobot()
-
+  const robot = useRobots().find((robot) => Number(robot.id) === 4)
   useFrame(({ clock }) => {
-    if (rotative.current && group.current) {
+    if (rotative.current && group.current && robot) {
       if (group.current.position.z !== robot.pose_z) rotative.current.rotation.x = -clock.getElapsedTime() * 4
       if (group.current.position.x - robot.pose_x > 0) rotative.current.rotation.z = -clock.getElapsedTime() * 4
       if (group.current.position.x - robot.pose_x < 0) rotative.current.rotation.z = clock.getElapsedTime() * 4
