@@ -1,20 +1,26 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { query } from '../../utils/fetchdata'
 import { useRobots, useRobotsDispatch } from '../../contexts/RobotContext'
 import MissionForm from './MissionForm'
-import { initialMissionData, MissionType, RobotType } from '../../utils/types'
+import { MissionType, RobotType } from '../../utils/types'
 
 export function MissionsList({
+  missions,
+  robots,
+  setMissions,
   selectedMission,
   setSelectedMission,
 }: {
-  selectedMission: MissionType
-  setSelectedMission: Dispatch<SetStateAction<MissionType>>
+  missions: MissionType[]
+  robots: RobotType[]
+  setMissions: Dispatch<SetStateAction<MissionType[]>>
+  selectedMission: MissionType | undefined
+  setSelectedMission: Dispatch<SetStateAction<MissionType | undefined>>
 }) {
-  const [missions, setMissions] = useState<MissionType[]>([])
+  const [selectedRobot, setSelectedRobot] = useState<RobotType | undefined>(
+    robots.find((robot) => robot.id === missions.find((mission) => mission.selected)?.robot_id)
+  )
 
-  const [robots, setRobots] = useState<RobotType[]>([])
-  const [selectedRobot, setSelectedRobot] = useState<RobotType | undefined>(undefined)
   const [formIsOpen, setFormIsOpen] = useState(false)
   const [isInZero, setIsInZero] = useState(false)
   const [isBusy, setIsBusy] = useState(false)
@@ -24,38 +30,23 @@ export function MissionsList({
 
   //Getting all lists of missions and robots from DB ----------------------------------------------
 
-  useEffect(() => {
-    const data = async () => {
-      const res = await query('/robots', { method: 'GET' })
-      setRobots(res)
-
-      const result = await query('/missions', { method: 'GET' })
-      if (result && result.length > 0) {
-        const missionsList = result.map((item: MissionType) => ({ ...item, active: false, selected: false }))
-        setMissions(missionsList)
-      }
-    }
-    data()
-  }, [])
-
   //Select mission function ----------------------------------------------------------
 
   function handleMissionSelect(mission: MissionType) {
     setIsInZero(false)
     setIsBusy(false)
-    if (selectedMission.id === mission.id) return
     setMissions(missions.map((item) => ({ ...item, selected: mission.id === item.id ? true : false })))
-    setSelectedMission({ ...mission, selected: true })
-    const robot = robots.find((item) => item.id === mission.robot_id)
-    if (robot) setSelectedRobot(robot)
+    setSelectedMission(missions.find((item) => mission.id === item.id))
+    setSelectedRobot(robots.find((robot) => robot.id === missions.find((item) => mission.id === item.id)?.robot_id))
   }
 
   //Starting o closing mission: loading mission's Robot, or remove it. -----------------------
 
   function handleMissionActive(mission: MissionType) {
     const status = mission.active
-    const isRobotOnZero = activeRobots.some((robot) => Math.abs(robot.pose_x) <= 0.5 && Math.abs(robot.pose_z) <= 0.5)
-    const isRobotBusy = activeRobots.some((robot) => robot.name === selectedRobot?.name)
+
+    const isRobotOnZero = activeRobots.some((robot) => Math.abs(robot.pose_x) <= 3 && Math.abs(robot.pose_z) <= 3)
+    const isRobotBusy = activeRobots.some((robot) => robot.id === selectedRobot!.id)
     const robot = activeRobots.find((robot) => robot.id === mission.robot_id)
 
     if (status && robot) {
@@ -73,18 +64,19 @@ export function MissionsList({
       dispatch({ type: 'add', payload: selectedRobot! })
     }
     setMissions(missions.map((item) => ({ ...item, active: item.id === mission.id ? !status : item.active })))
-    setSelectedMission({ ...selectedMission, active: !status })
+    setSelectedMission({ ...selectedMission!, active: !status })
   }
 
   function handleNewMission() {
-    setSelectedMission(initialMissionData)
     setFormIsOpen(true)
+    setSelectedMission(undefined)
+    setSelectedRobot(undefined)
   }
 
   //Inserting new or updating existing mission ---------------------------------------------
 
-  const onSave = async () => {
-    if (!selectedMission.name || !selectedMission.description || !selectedMission.robot_id) return
+  async function onSave() {
+    if (!selectedMission || !selectedMission.name || !selectedMission.description || !selectedMission.robot_id) return
     if (!selectedMission.id) {
       const res = await query('/mission', {
         method: 'POST',
@@ -112,13 +104,15 @@ export function MissionsList({
       })
       console.log(res.msg)
     }
+
     //Getting renewed lists of robots and missions --------------------------------
     const result = await query('/missions', { method: 'GET' })
     if (result.length > 0) {
       const newMissionsList = result.map((item: MissionType) => ({ ...item, inAction: false }))
       setMissions(newMissionsList)
     }
-    setSelectedMission(initialMissionData)
+
+    setSelectedMission(undefined)
     setSelectedRobot(undefined)
   }
 
@@ -127,10 +121,11 @@ export function MissionsList({
     const res = await query(`/mission/${selectedMission?.id}`, { method: 'DELETE' })
     console.log(res)
 
-    setSelectedMission(initialMissionData)
+    setSelectedMission(undefined)
+    setSelectedRobot(undefined)
     const result = await query('/missions', { method: 'GET' })
     if (result.length > 0) {
-      const newMissionsList = result.map((item: MissionType) => ({ ...item, inAction: false }))
+      const newMissionsList = result.map((item: MissionType) => ({ ...item, inAction: false, selected: false }))
       setMissions(newMissionsList)
     }
   }
@@ -168,7 +163,7 @@ export function MissionsList({
                 <p>
                   Mission selected robot:
                   <span className="font-bold italic text-lime-500">
-                    {' ' + selectedRobot?.name + ' model.' + selectedRobot?.model_name}
+                    {' ' + selectedRobot?.name + ' model.' + selectedRobot?.model}
                   </span>
                 </p>
 

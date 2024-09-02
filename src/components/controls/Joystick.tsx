@@ -6,9 +6,9 @@ import JoystickButton from './JoystickButton'
 import { MissionType } from '../../utils/types'
 import RobotPosition from './RobotPosition'
 
-export default function Joystick({ selectedMission }: { selectedMission: MissionType }) {
-  const robot = useRobots().find((robot) => robot.id === selectedMission.robot_id)
+export default function Joystick({ selectedMission }: { selectedMission: MissionType | undefined }) {
   const socket = useWebSocket()
+  const robot = useRobots().find((robot) => robot.id === selectedMission?.robot_id)
 
   //If the component did mount, then add the keypad event listener --------
 
@@ -17,6 +17,7 @@ export default function Joystick({ selectedMission }: { selectedMission: Mission
       if (!selectedMission || !selectedMission.active || !robot) return
       if (socket) {
         const { x, z, angle } = movement(e.key, robot.pose_x, robot.pose_z, robot.angle, robot.id)
+
         socket.send(
           JSON.stringify({
             method: 'reposition',

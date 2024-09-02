@@ -1,19 +1,22 @@
 import { ChangeEvent, SetStateAction, Dispatch, ReactElement } from 'react'
-import { MissionType, RobotType } from '../../utils/types'
+import { initialMissionData, MissionType, RobotType } from '../../utils/types'
 
 interface PropsType {
-  mission: MissionType
-  setMission: Dispatch<SetStateAction<MissionType>>
+  mission: MissionType | undefined
+  setMission: Dispatch<SetStateAction<MissionType | undefined>>
   robots: RobotType[]
   setOpen: Dispatch<SetStateAction<boolean>>
   onSave: () => Promise<void>
 }
 
 export default function MissionForm({ mission, setMission, robots, setOpen, onSave }: PropsType): ReactElement {
-  const onChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  if (mission) setMission(initialMissionData)
+
+  function onChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     const value = event.target.value
-    setMission({ ...mission, [event.target.name]: value })
+    setMission({ ...mission!, [event.target.name]: value })
   }
+
   return (
     <div className="w-full flex flex-col bg-slate-300 dark:bg-slate-900 rounded-2xl p-1 relative">
       <button
@@ -56,13 +59,13 @@ export default function MissionForm({ mission, setMission, robots, setOpen, onSa
           name="robot_id"
           className="rounded-full  cursor-pointer bg-slate-300 dark:bg-slate-800 px-2 ml-2 opacity-90 hover:opacity-100 active:scale-90 shadow-sm shadow-slate-600 active:shadow-none transition-all"
           onChange={onChange}
-          value={mission.robot_id}
+          value={mission!.robot_id}
         >
           <option value={0}>⤵ select robot</option>
           {robots &&
             robots.map((robot: RobotType) => (
               <option key={robot.id} value={robot.id}>
-                {robot.name + ' model: ' + robot.model_name}
+                {robot.name + ' model: ' + robot.model}
               </option>
             ))}
         </select>

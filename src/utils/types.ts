@@ -10,7 +10,7 @@ export interface MissionType {
 export interface RobotType {
   id: number
   name: string
-  model_name: string
+  model: string
   pose_x: number
   pose_z: number
   angle: number
