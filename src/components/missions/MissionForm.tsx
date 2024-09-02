@@ -1,17 +1,15 @@
 import { ChangeEvent, SetStateAction, Dispatch, ReactElement } from 'react'
-import { initialMissionData, MissionType, RobotType } from '../../utils/types'
+import { MissionType, RobotType } from '../../utils/types'
 
 interface PropsType {
-  mission: MissionType | undefined
-  setMission: Dispatch<SetStateAction<MissionType | undefined>>
+  mission: MissionType
+  setMission: Dispatch<SetStateAction<MissionType>>
   robots: RobotType[]
   setOpen: Dispatch<SetStateAction<boolean>>
   onSave: () => Promise<void>
 }
 
 export default function MissionForm({ mission, setMission, robots, setOpen, onSave }: PropsType): ReactElement {
-  if (mission) setMission(initialMissionData)
-
   function onChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     const value = event.target.value
     setMission({ ...mission!, [event.target.name]: value })
@@ -35,7 +33,7 @@ export default function MissionForm({ mission, setMission, robots, setOpen, onSa
           type="text"
           name="name"
           onChange={onChange}
-          value={mission!.name}
+          value={mission.name}
           className={`ml-2 w-4/5 bg-transparent opacity-90 focus:outline-none hover:opacity-100 focus:opacity-100 peer`}
         />
         <div className="absolute w-0 left-16 transition-all duration-300 ease-in-out border-slate-500 bottom-0 peer-focus:w-4/5 peer-focus:border-b" />

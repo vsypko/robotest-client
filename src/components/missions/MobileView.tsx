@@ -12,8 +12,8 @@ export default function MobileView({
   missions: MissionType[]
   robots: RobotType[]
   setMissions: Dispatch<SetStateAction<MissionType[]>>
-  selectedMission: MissionType | undefined
-  setSelectedMission: Dispatch<SetStateAction<MissionType | undefined>>
+  selectedMission: MissionType
+  setSelectedMission: Dispatch<SetStateAction<MissionType>>
 }) {
   const [isMissionOpened, setMissionsOpened] = useState(false)
   return (

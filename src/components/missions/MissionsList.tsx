@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useState } from 'react'
 import { query } from '../../utils/fetchdata'
 import { useRobots, useRobotsDispatch } from '../../contexts/RobotContext'
 import MissionForm from './MissionForm'
-import { MissionType, RobotType } from '../../utils/types'
+import { initialMissionData, MissionType, RobotType } from '../../utils/types'
 
 export function MissionsList({
   missions,
@@ -14,8 +14,8 @@ export function MissionsList({
   missions: MissionType[]
   robots: RobotType[]
   setMissions: Dispatch<SetStateAction<MissionType[]>>
-  selectedMission: MissionType | undefined
-  setSelectedMission: Dispatch<SetStateAction<MissionType | undefined>>
+  selectedMission: MissionType
+  setSelectedMission: Dispatch<SetStateAction<MissionType>>
 }) {
   const [selectedRobot, setSelectedRobot] = useState<RobotType | undefined>(
     robots.find((robot) => robot.id === missions.find((mission) => mission.selected)?.robot_id)
@@ -28,15 +28,13 @@ export function MissionsList({
   const activeRobots = useRobots()
   const dispatch = useRobotsDispatch()
 
-  //Getting all lists of missions and robots from DB ----------------------------------------------
-
   //Select mission function ----------------------------------------------------------
 
   function handleMissionSelect(mission: MissionType) {
     setIsInZero(false)
     setIsBusy(false)
     setMissions(missions.map((item) => ({ ...item, selected: mission.id === item.id ? true : false })))
-    setSelectedMission(missions.find((item) => mission.id === item.id))
+    setSelectedMission(missions.find((item) => mission.id === item.id) ?? initialMissionData)
     setSelectedRobot(robots.find((robot) => robot.id === missions.find((item) => mission.id === item.id)?.robot_id))
   }
 
@@ -69,7 +67,7 @@ export function MissionsList({
 
   function handleNewMission() {
     setFormIsOpen(true)
-    setSelectedMission(undefined)
+    setSelectedMission(initialMissionData)
     setSelectedRobot(undefined)
   }
 
@@ -77,6 +75,7 @@ export function MissionsList({
 
   async function onSave() {
     if (!selectedMission || !selectedMission.name || !selectedMission.description || !selectedMission.robot_id) return
+    setFormIsOpen(false)
     if (!selectedMission.id) {
       const res = await query('/mission', {
         method: 'POST',
@@ -108,20 +107,27 @@ export function MissionsList({
     //Getting renewed lists of robots and missions --------------------------------
     const result = await query('/missions', { method: 'GET' })
     if (result.length > 0) {
-      const newMissionsList = result.map((item: MissionType) => ({ ...item, inAction: false }))
+      const newMissionsList = result.map((item: MissionType) => {
+        console.log(item)
+        return {
+          ...item,
+          active: activeRobots.some((rob) => rob.id === item.id) ? true : false,
+        }
+      })
+
       setMissions(newMissionsList)
     }
 
-    setSelectedMission(undefined)
+    setSelectedMission(initialMissionData)
     setSelectedRobot(undefined)
   }
 
   // Delete mission function --------------------------------------------
   async function handleDeleteMission() {
     const res = await query(`/mission/${selectedMission?.id}`, { method: 'DELETE' })
-    console.log(res)
+    console.log(res.msg)
 
-    setSelectedMission(undefined)
+    setSelectedMission(initialMissionData)
     setSelectedRobot(undefined)
     const result = await query('/missions', { method: 'GET' })
     if (result.length > 0) {

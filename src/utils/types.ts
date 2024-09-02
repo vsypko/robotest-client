@@ -29,12 +29,13 @@ export const initialMissionData: MissionType = {
   description: '',
   robot_id: 0,
   active: false,
+  selected: false,
 }
 
 export const initialRobotData: RobotType = {
   id: 0,
   name: '',
-  model_name: '',
+  model: '',
   pose_x: 0,
   pose_z: 0,
   angle: 0,

@@ -6,7 +6,7 @@ import JoystickButton from './JoystickButton'
 import { MissionType } from '../../utils/types'
 import RobotPosition from './RobotPosition'
 
-export default function Joystick({ selectedMission }: { selectedMission: MissionType | undefined }) {
+export default function Joystick({ selectedMission }: { selectedMission: MissionType }) {
   const socket = useWebSocket()
   const robot = useRobots().find((robot) => robot.id === selectedMission?.robot_id)
 

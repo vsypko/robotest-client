@@ -2,16 +2,16 @@ import Court from './components/court/Court'
 import Joystick from './components/controls/Joystick'
 import { MissionsList } from './components/missions/MissionsList'
 import MobileView from './components/missions/MobileView'
-import { MissionType, RobotType } from './utils/types'
+import { initialMissionData, MissionType, RobotType } from './utils/types'
 import { useEffect, useState } from 'react'
 import { query } from './utils/fetchdata'
 
 function App() {
   const [missions, setMissions] = useState<MissionType[]>([])
   const [robots, setRobots] = useState<RobotType[]>([])
-  const [selectedMission, setSelectedMission] = useState<MissionType | undefined>(
-    missions.find((mission) => mission.selected)
-  )
+  const [selectedMission, setSelectedMission] = useState<MissionType>(initialMissionData)
+
+  //Getting all lists of missions and robots from DB ----------------------------------------------
 
   useEffect(() => {
     const data = async () => {
