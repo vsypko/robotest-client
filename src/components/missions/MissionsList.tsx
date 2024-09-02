@@ -107,13 +107,11 @@ export function MissionsList({
     //Getting renewed lists of robots and missions --------------------------------
     const result = await query('/missions', { method: 'GET' })
     if (result.length > 0) {
-      const newMissionsList = result.map((item: MissionType) => {
-        console.log(item)
-        return {
-          ...item,
-          active: activeRobots.some((rob) => rob.id === item.id) ? true : false,
-        }
-      })
+      const newMissionsList = result.map((item: MissionType) => ({
+        ...item,
+        active: activeRobots.some((rob) => rob.id === item.robot_id) ? true : false,
+        selected: false,
+      }))
 
       setMissions(newMissionsList)
     }
@@ -131,7 +129,11 @@ export function MissionsList({
     setSelectedRobot(undefined)
     const result = await query('/missions', { method: 'GET' })
     if (result.length > 0) {
-      const newMissionsList = result.map((item: MissionType) => ({ ...item, inAction: false, selected: false }))
+      const newMissionsList = result.map((item: MissionType) => ({
+        ...item,
+        active: activeRobots.some((rob) => rob.id === item.robot_id) ? true : false,
+        selected: false,
+      }))
       setMissions(newMissionsList)
     }
   }
