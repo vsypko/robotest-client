@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
+import { RigidBody } from '@react-three/rapier'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -17,9 +18,11 @@ export default function Field(props: JSX.IntrinsicElements['group']) {
   const { nodes, materials } = useGLTF('/field.glb') as GLTFResult
   return (
     <group {...props} dispose={null}>
-      <group position={[0, 0, 0]} scale={20}>
+      <group scale={20}>
         <mesh castShadow receiveShadow geometry={nodes.Cube_1.geometry} material={materials.Material} />
-        <mesh castShadow receiveShadow geometry={nodes.Cube_2.geometry} material={materials['Material.001']} />
+        <RigidBody type="fixed" restitution={0}>
+          <mesh castShadow receiveShadow geometry={nodes.Cube_2.geometry} material={materials['Material.001']} />
+        </RigidBody>
       </group>
     </group>
   )
