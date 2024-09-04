@@ -20,7 +20,7 @@ export default function Field(props: JSX.IntrinsicElements['group']) {
     <group {...props} dispose={null}>
       <group scale={20}>
         <mesh castShadow receiveShadow geometry={nodes.Cube_1.geometry} material={materials.Material} />
-        <RigidBody type="fixed" restitution={0}>
+        <RigidBody type="fixed" restitution={0} colliders={false}>
           <mesh castShadow receiveShadow geometry={nodes.Cube_2.geometry} material={materials['Material.001']} />
         </RigidBody>
       </group>

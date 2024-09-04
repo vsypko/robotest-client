@@ -14,20 +14,19 @@ export default function Joystick({ selectedMission }: { selectedMission: Mission
 
   useEffect(() => {
     function handleKeyPress(e: KeyboardEvent) {
-      if (!selectedMission || !selectedMission.active || !robot) return
-      if (socket) {
-        const { x, z, angle } = movement(e.key, robot.pose_x, robot.pose_z, robot.angle, robot.id)
+      if (!selectedMission || !selectedMission.active || !robot || !socket) return
 
-        socket.send(
-          JSON.stringify({
-            method: 'reposition',
-            id: robot.id,
-            x,
-            z,
-            angle,
-          })
-        )
-      }
+      const { x, z, angle } = movement(e.key, robot.pose_x, robot.pose_z, robot.angle, robot.id)
+
+      socket.send(
+        JSON.stringify({
+          method: 'reposition',
+          id: robot.id,
+          x,
+          z,
+          angle,
+        })
+      )
     }
 
     function handleKeyUp() {

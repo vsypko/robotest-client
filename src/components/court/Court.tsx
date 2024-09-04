@@ -8,7 +8,7 @@ import Robot from '../robots/Robot'
 import { Physics } from '@react-three/rapier'
 
 export default function Court() {
-  const robots = useRobots()
+  const activeRobots = useRobots()
 
   return (
     <Canvas
@@ -25,7 +25,7 @@ export default function Court() {
       <Suspense fallback={null}>
         <Physics gravity={[0, 0, 0]}>
           <Field />
-          {robots && robots.map((robot) => <Robot robot={robot.name} key={robot.id} />)}
+          {activeRobots && activeRobots.map((robot) => <Robot robot={robot.name} key={robot.id} />)}
         </Physics>
       </Suspense>
     </Canvas>
