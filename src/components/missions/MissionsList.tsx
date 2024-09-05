@@ -6,16 +6,16 @@ import { initialMissionData, MissionType, RobotType } from '../../utils/types'
 
 export function MissionsList({
   missions,
-  robots,
   setMissions,
-  selectedMission,
-  setSelectedMission,
-}: {
+  robots,
+}: // selectedMission,
+// setSelectedMission,
+{
   missions: MissionType[]
-  robots: RobotType[]
   setMissions: Dispatch<SetStateAction<MissionType[]>>
-  selectedMission: MissionType
-  setSelectedMission: Dispatch<SetStateAction<MissionType>>
+  robots: RobotType[]
+  // selectedMission: MissionType
+  // setSelectedMission: Dispatch<SetStateAction<MissionType>>
 }) {
   const [formIsOpen, setFormIsOpen] = useState(false)
   const [isInZero, setIsInZero] = useState(false)
@@ -34,7 +34,6 @@ export function MissionsList({
     setIsInZero(false)
     setIsBusy(false)
     setMissions(missions.map((item) => ({ ...item, selected: mission.id === item.id ? true : false })))
-    setSelectedMission(missions.find((item) => mission.id === item.id) ?? initialMissionData)
   }
 
   async function handleMissionStop(mission: MissionType) {
@@ -46,7 +45,6 @@ export function MissionsList({
   function handleMissionActive(mission: MissionType) {
     const status = mission.active
     setMissions(missions.map((item) => ({ ...item, active: item.id === mission.id ? !status : item.active })))
-    setSelectedMission({ ...selectedMission!, active: !status })
 
     const isRobotOnZero = activeRobots.some((robot) => Math.abs(robot.pose_x) <= 3 && Math.abs(robot.pose_z) <= 3)
     const activeRobot = activeRobots.find((robot) => robot.id === mission.robot_id)
@@ -60,12 +58,11 @@ export function MissionsList({
 
   function handleNewMission() {
     setFormIsOpen(true)
-    setSelectedMission(initialMissionData)
+    setMissions(missions.map((mission) => ({ ...mission, selected: false })))
   }
 
   // Delete mission function --------------------------------------------
   async function handleDeleteMission(mission: MissionType) {
-    setSelectedMission(initialMissionData)
     setMissions(await deleteMission(mission.id, activeRobots))
   }
 
@@ -82,20 +79,18 @@ export function MissionsList({
               <div className="flex w-full items-center place-items-start px-1 rounded-full group:hover:bg-teal-400 dark:group-hover:bg-teal-800">
                 <i
                   className={`transition-all mr-2 ${
-                    selectedMission?.id === mission.id ? 'text-teal-500 fas fa-circle-dot' : 'far fa-circle'
+                    mission.selected ? 'text-teal-500 fas fa-circle-dot' : 'far fa-circle'
                   }`}
                 ></i>
                 <button
                   onClick={() => handleMissionSelect(mission)}
-                  className={`w-full text-start ${selectedMission?.id === mission.id ? 'opacity-100' : 'opacity-75'}`}
+                  className={`w-full text-start ${mission.selected ? 'opacity-100' : 'opacity-75'}`}
                 >
                   {mission.name}
                 </button>
               </div>
 
-              <div
-                className={`text-base text-justify ${selectedMission?.id === mission.id ? 'flex flex-col' : 'hidden'}`}
-              >
+              <div className={`text-base text-justify ${mission.selected ? 'flex flex-col' : 'hidden'}`}>
                 <p>{mission.description}</p>
 
                 <p>
@@ -157,11 +152,10 @@ export function MissionsList({
       )}
       {formIsOpen && (
         <MissionForm
-          mission={selectedMission}
-          setMission={setSelectedMission}
+          mission={missions.find((mission) => mission.selected) ?? initialMissionData}
+          setMissions={setMissions}
           robots={robots}
           setOpen={setFormIsOpen}
-          setMissions={setMissions}
         />
       )}
     </div>
