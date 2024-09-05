@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from 'react'
-import { query } from '../../utils/fetchdata'
+import { deleteMission } from '../../utils/fetchdata'
 import { useRobots, useRobotsDispatch } from '../../contexts/RobotContext'
 import MissionForm from './MissionForm'
 import { initialMissionData, MissionType, RobotType } from '../../utils/types'
@@ -17,16 +17,16 @@ export function MissionsList({
   selectedMission: MissionType
   setSelectedMission: Dispatch<SetStateAction<MissionType>>
 }) {
-  const [selectedRobot, setSelectedRobot] = useState<RobotType | undefined>(
-    robots.find((robot) => robot.id === missions.find((mission) => mission.selected)?.robot_id)
-  )
-
   const [formIsOpen, setFormIsOpen] = useState(false)
   const [isInZero, setIsInZero] = useState(false)
   const [isBusy, setIsBusy] = useState(false)
 
   const activeRobots = useRobots()
   const dispatch = useRobotsDispatch()
+
+  function getMissionRobot(mission: MissionType) {
+    return robots.find((robot) => robot.id === mission.robot_id)
+  }
 
   //Select mission function ----------------------------------------------------------
 
@@ -35,107 +35,38 @@ export function MissionsList({
     setIsBusy(false)
     setMissions(missions.map((item) => ({ ...item, selected: mission.id === item.id ? true : false })))
     setSelectedMission(missions.find((item) => mission.id === item.id) ?? initialMissionData)
-    setSelectedRobot(robots.find((robot) => robot.id === missions.find((item) => mission.id === item.id)?.robot_id))
   }
 
-  //Starting o closing mission: loading mission's Robot, or remove it. -----------------------
+  async function handleMissionStop(mission: MissionType) {
+    console.log('stop: ', mission)
+  }
+
+  //Starting or pausing mission: loading the mission's Robot, or removing it from render. -----------------------
 
   function handleMissionActive(mission: MissionType) {
     const status = mission.active
-
-    const isRobotOnZero = activeRobots.some((robot) => Math.abs(robot.pose_x) <= 3 && Math.abs(robot.pose_z) <= 3)
-    const isRobotBusy = activeRobots.some((robot) => robot.id === selectedRobot!.id)
-    const robot = activeRobots.find((robot) => robot.id === mission.robot_id)
-
-    if (status && robot) {
-      dispatch({ type: 'remove', payload: robot })
-    } else {
-      if (isRobotOnZero) {
-        setIsInZero(true)
-        return
-      }
-      if (isRobotBusy) {
-        setIsBusy(true)
-        return
-      }
-
-      dispatch({ type: 'add', payload: selectedRobot! })
-    }
     setMissions(missions.map((item) => ({ ...item, active: item.id === mission.id ? !status : item.active })))
     setSelectedMission({ ...selectedMission!, active: !status })
+
+    const isRobotOnZero = activeRobots.some((robot) => Math.abs(robot.pose_x) <= 3 && Math.abs(robot.pose_z) <= 3)
+    const activeRobot = activeRobots.find((robot) => robot.id === mission.robot_id)
+    const robot = getMissionRobot(mission)
+
+    if (status && activeRobot) return dispatch({ type: 'remove', payload: activeRobot })
+    if (!status && activeRobot) return setIsBusy(true)
+    if (!status && !activeRobot && isRobotOnZero) return setIsInZero(true)
+    if (robot) dispatch({ type: 'add', payload: robot })
   }
 
   function handleNewMission() {
     setFormIsOpen(true)
     setSelectedMission(initialMissionData)
-    setSelectedRobot(undefined)
-  }
-
-  //Inserting new or updating existing mission ---------------------------------------------
-
-  async function onSave() {
-    if (!selectedMission || !selectedMission.name || !selectedMission.description || !selectedMission.robot_id) return
-    setFormIsOpen(false)
-    if (!selectedMission.id) {
-      const res = await query('/mission', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: selectedMission.name,
-          description: selectedMission.description,
-          robot_id: selectedMission.robot_id,
-        }),
-      })
-      console.log(res.msg)
-    } else {
-      const res = await query(`/mission/${selectedMission.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: selectedMission.name,
-          description: selectedMission.description,
-          robot_id: selectedMission.robot_id,
-        }),
-      })
-      console.log(res.msg)
-    }
-
-    //Getting renewed lists of robots and missions --------------------------------
-    const result = await query('/missions', { method: 'GET' })
-    if (result.length > 0) {
-      const newMissionsList = result.map((item: MissionType) => ({
-        ...item,
-        active: activeRobots.some((rob) => rob.id === item.robot_id) ? true : false,
-        selected: false,
-      }))
-
-      setMissions(newMissionsList)
-    }
-
-    setSelectedMission(initialMissionData)
-    setSelectedRobot(undefined)
   }
 
   // Delete mission function --------------------------------------------
-  async function handleDeleteMission() {
-    const res = await query(`/mission/${selectedMission?.id}`, { method: 'DELETE' })
-    console.log(res.msg)
-
+  async function handleDeleteMission(mission: MissionType) {
     setSelectedMission(initialMissionData)
-    setSelectedRobot(undefined)
-    const result = await query('/missions', { method: 'GET' })
-    if (result.length > 0) {
-      const newMissionsList = result.map((item: MissionType) => ({
-        ...item,
-        active: activeRobots.some((rob) => rob.id === item.robot_id) ? true : false,
-        selected: false,
-      }))
-      setMissions(newMissionsList)
-    }
+    setMissions(await deleteMission(mission.id, activeRobots))
   }
 
   //--------------------------------------------------------------------
@@ -154,7 +85,6 @@ export function MissionsList({
                     selectedMission?.id === mission.id ? 'text-teal-500 fas fa-circle-dot' : 'far fa-circle'
                   }`}
                 ></i>
-
                 <button
                   onClick={() => handleMissionSelect(mission)}
                   className={`w-full text-start ${selectedMission?.id === mission.id ? 'opacity-100' : 'opacity-75'}`}
@@ -171,11 +101,18 @@ export function MissionsList({
                 <p>
                   Mission selected robot:
                   <span className="font-bold italic text-lime-500">
-                    {' ' + selectedRobot?.name + ' model.' + selectedRobot?.model}
+                    {' ' + getMissionRobot(mission)?.name + ' model.' + getMissionRobot(mission)?.model}
                   </span>
                 </p>
 
                 <div className="flex justify-end text-2xl">
+                  {/* Stop/reset mission button ------------------------------------------------*/}
+                  <button
+                    onClick={() => handleMissionStop(mission)}
+                    className="px-3 opacity-75 hover:opacity-100 active:scale-90"
+                  >
+                    <i className="fas fa-stop text-emerald-500" />
+                  </button>
                   {/* Play/pause mission button ------------------------------------------------*/}
                   <button
                     onClick={() => handleMissionActive(mission)}
@@ -183,7 +120,7 @@ export function MissionsList({
                   >
                     <i className={`fas ${mission.active ? 'fa-pause text-orange-400' : 'fa-play text-emerald-500'}`} />
                   </button>
-
+                  {/* Edit mission button ------------------------------------------------*/}
                   <button
                     onClick={() => {
                       setFormIsOpen(true)
@@ -194,9 +131,9 @@ export function MissionsList({
                   >
                     <i className="fas fa-pencil" />
                   </button>
-
+                  {/* Delete mission button ------------------------------------------------*/}
                   <button
-                    onClick={handleDeleteMission}
+                    onClick={() => handleDeleteMission(mission)}
                     type="button"
                     className="px-3 opacity-75 hover:opacity-100 active:scale-90"
                   >
@@ -224,7 +161,7 @@ export function MissionsList({
           setMission={setSelectedMission}
           robots={robots}
           setOpen={setFormIsOpen}
-          onSave={onSave}
+          setMissions={setMissions}
         />
       )}
     </div>

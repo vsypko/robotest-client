@@ -4,7 +4,7 @@ import { MissionsList } from './components/missions/MissionsList'
 import MobileView from './components/missions/MobileView'
 import { initialMissionData, MissionType, RobotType } from './utils/types'
 import { useEffect, useState } from 'react'
-import { query } from './utils/fetchdata'
+import { getMissions, getRobots } from './utils/fetchdata'
 
 function App() {
   const [missions, setMissions] = useState<MissionType[]>([])
@@ -15,14 +15,8 @@ function App() {
 
   useEffect(() => {
     const data = async () => {
-      const res = await query('/robots', { method: 'GET' })
-      setRobots(res)
-
-      const result = await query('/missions', { method: 'GET' })
-      if (result && result.length > 0) {
-        const missionsList = result.map((item: MissionType) => ({ ...item, active: false, selected: false }))
-        setMissions(missionsList)
-      }
+      setRobots(await getRobots())
+      setMissions(await getMissions())
     }
     data()
   }, [])

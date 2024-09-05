@@ -1,18 +1,29 @@
 import { ChangeEvent, SetStateAction, Dispatch, ReactElement } from 'react'
-import { MissionType, RobotType } from '../../utils/types'
+import { initialMissionData, MissionType, RobotType } from '../../utils/types'
+import { saveMission } from '../../utils/fetchdata'
+import { useRobots } from '../../contexts/RobotContext'
 
 interface PropsType {
   mission: MissionType
   setMission: Dispatch<SetStateAction<MissionType>>
   robots: RobotType[]
   setOpen: Dispatch<SetStateAction<boolean>>
-  onSave: () => Promise<void>
+  setMissions: Dispatch<SetStateAction<MissionType[]>>
 }
 
-export default function MissionForm({ mission, setMission, robots, setOpen, onSave }: PropsType): ReactElement {
+export default function MissionForm({ mission, setMission, robots, setOpen, setMissions }: PropsType): ReactElement {
+  const activeRobots = useRobots()
+
   function onChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     const value = event.target.value
     setMission({ ...mission!, [event.target.name]: value })
+  }
+
+  async function handleSaveMission() {
+    const { id, name, description, robot_id } = mission
+    setMissions(await saveMission(name, description, robot_id, id, activeRobots))
+    setMission(initialMissionData)
+    setOpen(false)
   }
 
   return (
@@ -69,7 +80,7 @@ export default function MissionForm({ mission, setMission, robots, setOpen, onSa
         </select>
       </div>
       <button
-        onClick={onSave}
+        onClick={handleSaveMission}
         className="w-full mt-4 px-2 rounded-full bg-teal-500 dark:bg-teal-800 opacity-70 hover:opacity-100 active:scale-90"
       >
         <i className="fas fa-floppy-disk mr-4" />
