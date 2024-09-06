@@ -45,7 +45,6 @@ export function MissionsList({
   }
 
   // Starting or pausing mission: loading the mission's Robot, or removing it from render.
-  // Check for zero position busy is comented for a while --------------------------------
 
   async function handleMissionActive(mission: MissionType) {
     const status = mission.active
