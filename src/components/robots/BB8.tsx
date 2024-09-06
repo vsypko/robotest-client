@@ -30,7 +30,7 @@ const isCloseToZero = (value: number): boolean => {
   return Math.abs(value) < TOLERANCE
 }
 
-export default function BB8(props: JSX.IntrinsicElements['group']) {
+export default function BB8() {
   //get robot data from context and rerender ---------------------------------
   const robot = useRobots().find((robot) => Number(robot.id) === 2)
   const socket = useWebSocket()
@@ -61,6 +61,7 @@ export default function BB8(props: JSX.IntrinsicElements['group']) {
         angle,
       })
     )
+    console.log('BB8 collision')
   }
 
   useFrame(({ clock }) => {
@@ -86,7 +87,7 @@ export default function BB8(props: JSX.IntrinsicElements['group']) {
   return (
     <group>
       <RigidBody ref={rigidBodyRef} colliders="hull" onCollisionEnter={({ other }) => handleCollisionEnter(other)}>
-        <group dispose={null} scale={[0.8, 0.8, 0.8]} position={[0, 0.45, 0]} {...props}>
+        <group dispose={null} scale={[0.8, 0.8, 0.8]} position={[0, 0.45, 0]}>
           <group name="root">
             <group name="GLTF_SceneRootNode">
               <group name="Cuerpo_1" ref={rotativObject}>

@@ -16,7 +16,7 @@ export function MissionsList({
   setRobots: Dispatch<React.SetStateAction<RobotType[]>>
 }) {
   const [formIsOpen, setFormIsOpen] = useState(false)
-  // const [isInZero, setIsInZero] = useState(false)
+  const [isInZero, setIsInZero] = useState(false)
   const [isBusy, setIsBusy] = useState(false)
 
   const activeRobots = useRobots()
@@ -29,7 +29,7 @@ export function MissionsList({
   //Select mission function ----------------------------------------------------------
 
   function handleMissionSelect(mission: MissionType) {
-    // setIsInZero(false)
+    setIsInZero(false)
     setIsBusy(false)
     setMissions(missions.map((item) => ({ ...item, selected: mission.id === item.id ? true : false })))
   }
@@ -49,9 +49,8 @@ export function MissionsList({
 
   async function handleMissionActive(mission: MissionType) {
     const status = mission.active
-    setMissions(missions.map((item) => ({ ...item, active: item.id === mission.id ? !status : item.active })))
 
-    // const isRobotOnZero = activeRobots.some((robot) => Math.abs(robot.pose_x) <= 3 && Math.abs(robot.pose_z) <= 3)
+    const isRobotOnZero = activeRobots.some((robot) => Math.abs(robot.pose_x) <= 1 && Math.abs(robot.pose_z) <= 1)
     const activeRobot = activeRobots.find((robot) => robot.id === mission.robot_id)
     const robot = getMissionRobot(mission)
 
@@ -60,11 +59,13 @@ export function MissionsList({
       const { id, pose_x, pose_z, angle } = activeRobot
       await savePosition({ id, pose_x, pose_z, angle })
       setRobots(await getRobots())
+      setMissions(missions.map((item) => ({ ...item, active: item.id === mission.id ? !status : item.active })))
       return
     }
     if (!status && activeRobot) return setIsBusy(true)
-    // if (!status && !activeRobot && isRobotOnZero) return setIsInZero(true)
+    if (!status && !activeRobot && isRobotOnZero) return setIsInZero(true)
     if (robot) dispatch({ type: 'add', payload: robot })
+    setMissions(missions.map((item) => ({ ...item, active: item.id === mission.id ? !status : item.active })))
   }
 
   function handleNewMission() {
@@ -150,7 +151,7 @@ export function MissionsList({
             </li>
           ))}
       </ul>
-      {/* {isInZero && <span className="text-orange-500">The zero position for robot initiation is occupied</span>} */}
+      {isInZero && <span className="text-orange-500">The zero position for robot initiation is occupied</span>}
       {isBusy && <span className="text-orange-500">The robot is involved in another mission</span>}
       {!formIsOpen && (
         <button

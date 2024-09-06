@@ -12,6 +12,7 @@ export function movement(keycode: string, x: number, z: number, currentAngl: num
     if (x < another.x) x -= step
     if (z >= another.z) z += step
     if (z < another.z) z -= step
+
     return { x, z, angle }
   }
 
