@@ -24,8 +24,8 @@ export default function Joystick({ missions }: { missions: MissionType[] }) {
         JSON.stringify({
           method: 'reposition',
           id: robot.id,
-          x,
-          z,
+          pose_x: x,
+          pose_z: z,
           angle,
         })
       )
@@ -38,8 +38,8 @@ export default function Joystick({ missions }: { missions: MissionType[] }) {
           JSON.stringify({
             method: 'reposition',
             id: robot.id,
-            x: robot.pose_x,
-            z: robot.pose_z,
+            pose_x: robot.pose_x,
+            pose_z: robot.pose_z,
             angle: robot.angle,
           })
         )

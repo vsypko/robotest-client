@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from 'react'
-import { deleteMission } from '../../utils/fetchdata'
+import { deleteMission, getRobots, savePosition } from '../../utils/fetchdata'
 import { useRobots, useRobotsDispatch } from '../../contexts/RobotContext'
 import MissionForm from './MissionForm'
 import { initialMissionData, MissionType, RobotType } from '../../utils/types'
@@ -8,17 +8,15 @@ export function MissionsList({
   missions,
   setMissions,
   robots,
-}: // selectedMission,
-// setSelectedMission,
-{
+  setRobots,
+}: {
   missions: MissionType[]
   setMissions: Dispatch<SetStateAction<MissionType[]>>
   robots: RobotType[]
-  // selectedMission: MissionType
-  // setSelectedMission: Dispatch<SetStateAction<MissionType>>
+  setRobots: Dispatch<React.SetStateAction<RobotType[]>>
 }) {
   const [formIsOpen, setFormIsOpen] = useState(false)
-  const [isInZero, setIsInZero] = useState(false)
+  // const [isInZero, setIsInZero] = useState(false)
   const [isBusy, setIsBusy] = useState(false)
 
   const activeRobots = useRobots()
@@ -31,28 +29,41 @@ export function MissionsList({
   //Select mission function ----------------------------------------------------------
 
   function handleMissionSelect(mission: MissionType) {
-    setIsInZero(false)
+    // setIsInZero(false)
     setIsBusy(false)
     setMissions(missions.map((item) => ({ ...item, selected: mission.id === item.id ? true : false })))
   }
 
   async function handleMissionStop(mission: MissionType) {
-    console.log('stop: ', mission)
+    const activeRobot = activeRobots.find((robot) => robot.id === mission.robot_id)
+    if (activeRobot) {
+      await savePosition({ id: activeRobot.id, pose_x: 0, pose_z: 0, angle: 0 })
+      dispatch({ type: 'remove', payload: activeRobot })
+    }
+    setMissions(missions.map((item) => ({ ...item, active: item.id === mission.id ? false : item.active })))
+    setRobots(await getRobots())
   }
 
-  //Starting or pausing mission: loading the mission's Robot, or removing it from render. -----------------------
+  // Starting or pausing mission: loading the mission's Robot, or removing it from render.
+  // Check for zero position busy is comented for a while --------------------------------
 
-  function handleMissionActive(mission: MissionType) {
+  async function handleMissionActive(mission: MissionType) {
     const status = mission.active
     setMissions(missions.map((item) => ({ ...item, active: item.id === mission.id ? !status : item.active })))
 
-    const isRobotOnZero = activeRobots.some((robot) => Math.abs(robot.pose_x) <= 3 && Math.abs(robot.pose_z) <= 3)
+    // const isRobotOnZero = activeRobots.some((robot) => Math.abs(robot.pose_x) <= 3 && Math.abs(robot.pose_z) <= 3)
     const activeRobot = activeRobots.find((robot) => robot.id === mission.robot_id)
     const robot = getMissionRobot(mission)
 
-    if (status && activeRobot) return dispatch({ type: 'remove', payload: activeRobot })
+    if (status && activeRobot) {
+      dispatch({ type: 'remove', payload: activeRobot })
+      const { id, pose_x, pose_z, angle } = activeRobot
+      await savePosition({ id, pose_x, pose_z, angle })
+      setRobots(await getRobots())
+      return
+    }
     if (!status && activeRobot) return setIsBusy(true)
-    if (!status && !activeRobot && isRobotOnZero) return setIsInZero(true)
+    // if (!status && !activeRobot && isRobotOnZero) return setIsInZero(true)
     if (robot) dispatch({ type: 'add', payload: robot })
   }
 
@@ -139,7 +150,7 @@ export function MissionsList({
             </li>
           ))}
       </ul>
-      {isInZero && <span className="text-orange-500">The zero position for robot initiation is occupied</span>}
+      {/* {isInZero && <span className="text-orange-500">The zero position for robot initiation is occupied</span>} */}
       {isBusy && <span className="text-orange-500">The robot is involved in another mission</span>}
       {!formIsOpen && (
         <button

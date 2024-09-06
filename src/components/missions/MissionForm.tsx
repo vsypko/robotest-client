@@ -4,13 +4,13 @@ import { saveMission } from '../../utils/fetchdata'
 import { useRobots } from '../../contexts/RobotContext'
 
 interface PropsType {
+  mission: MissionType
   setMissions: Dispatch<SetStateAction<MissionType[]>>
   robots: RobotType[]
   setOpen: Dispatch<SetStateAction<boolean>>
-  mission: MissionType
 }
 
-export default function MissionForm({ setMissions, robots, setOpen, mission }: PropsType): ReactElement {
+export default function MissionForm({ mission, setMissions, robots, setOpen }: PropsType): ReactElement {
   const activeRobots = useRobots()
   const [editMission, setEditMission] = useState<MissionType>(mission)
 

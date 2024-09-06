@@ -16,8 +16,8 @@ function robotReducer(state: RobotState, action: RobotAction): RobotState {
     }
 
     case 'update': {
-      const { id, x, z, angle } = action.payload as RobotPositionType
-      return state.map((robot) => (robot.id === id ? { ...robot, pose_x: x, pose_z: z, angle: angle } : robot))
+      const { id, pose_x, pose_z, angle } = action.payload as RobotPositionType
+      return state.map((robot) => (robot.id === id ? { ...robot, pose_x, pose_z, angle: angle } : robot))
     }
 
     case 'remove': {

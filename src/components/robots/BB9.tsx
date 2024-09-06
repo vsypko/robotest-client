@@ -60,8 +60,8 @@ export default function BB9() {
       JSON.stringify({
         method: 'reposition',
         id: robot.id,
-        x,
-        z,
+        pose_x: x,
+        pose_z: z,
         angle,
       })
     )

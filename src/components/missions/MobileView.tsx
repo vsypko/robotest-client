@@ -6,10 +6,12 @@ export default function MobileView({
   missions,
   robots,
   setMissions,
+  setRobots,
 }: {
   missions: MissionType[]
   robots: RobotType[]
   setMissions: Dispatch<SetStateAction<MissionType[]>>
+  setRobots: Dispatch<SetStateAction<RobotType[]>>
 }) {
   const [isMissionOpened, setMissionsOpened] = useState(false)
   return (
@@ -28,7 +30,9 @@ export default function MobileView({
         </button>
       </div>
 
-      {isMissionOpened && <MissionsList missions={missions} setMissions={setMissions} robots={robots} />}
+      {isMissionOpened && (
+        <MissionsList missions={missions} setMissions={setMissions} robots={robots} setRobots={setRobots} />
+      )}
     </div>
   )
 }

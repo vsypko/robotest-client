@@ -22,15 +22,15 @@ export async function getRobots() {
 }
 //save current robot position --------------------------
 export async function savePosition(position: RobotPositionType) {
-  const { id, x, z, angle } = position
+  const { id, pose_x, pose_z, angle } = position
   const res = await query(`/robot/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      x,
-      z,
+      pose_x,
+      pose_z,
       angle,
     }),
   })

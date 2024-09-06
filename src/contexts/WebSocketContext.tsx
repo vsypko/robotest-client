@@ -24,8 +24,8 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
   }
 
   const onMessage = (msg: MessageEvent) => {
-    const { method, id, x, z, angle } = JSON.parse(msg.data)
-    if (method === 'newposition') dispatch({ type: 'update', payload: { id, x, z, angle } })
+    const { method, id, pose_x, pose_z, angle } = JSON.parse(msg.data)
+    if (method === 'newposition') dispatch({ type: 'update', payload: { id, pose_x, pose_z, angle } })
   }
 
   const onClose = () => {

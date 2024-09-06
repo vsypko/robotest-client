@@ -18,8 +18,8 @@ export interface RobotType {
 
 export interface RobotPositionType {
   id: number
-  x: number
-  z: number
+  pose_x: number
+  pose_z: number
   angle: number
 }
 

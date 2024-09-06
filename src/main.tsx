@@ -4,7 +4,6 @@ import App from './App.tsx'
 import './app.css'
 import { WebSocketProvider } from './contexts/WebSocketContext.tsx'
 import { RobotProvider } from './contexts/RobotContext.tsx'
-// import { MissionContextProvider } from './contexts/missionContext.tsx'
 
 if (
   localStorage.theme === 'dark' ||

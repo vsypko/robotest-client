@@ -56,8 +56,8 @@ export default function BB8(props: JSX.IntrinsicElements['group']) {
       JSON.stringify({
         method: 'reposition',
         id: robot.id,
-        x,
-        z,
+        pose_x: x,
+        pose_z: z,
         angle,
       })
     )
