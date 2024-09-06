@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { useRobots } from '../../contexts/RobotContext'
@@ -41,6 +41,7 @@ export default function BB9() {
 
   //get robot data from context and rerender ---------------------------------
   const robot = useRobots().find((robot) => Number(robot.id) === 4)
+  const [init] = useState({ x: robot!.pose_x, z: robot!.pose_z })
   const socket = useWebSocket()
 
   const handleCollisionEnter = (other: CollisionTarget) => {
@@ -83,13 +84,18 @@ export default function BB9() {
     const quaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, robot.angle, 0))
     rigidBodyRef.current.setRotation(quaternion, true)
     if (!isCloseToZero(dz) || !isCloseToZero(dx)) rotative.current.rotation.y = robot.angle
-    rigidBodyRef.current.setTranslation({ x: robot.pose_x, y: 0, z: robot.pose_z }, true)
+    rigidBodyRef.current.setTranslation({ x: robot.pose_x, y: -0.6, z: robot.pose_z }, true)
   })
 
   return (
     <group>
-      <RigidBody ref={rigidBodyRef} colliders="hull" onCollisionEnter={({ other }) => handleCollisionEnter(other)}>
-        <group dispose={null} position={[0, -0.6, 0]}>
+      <RigidBody
+        ref={rigidBodyRef}
+        colliders="hull"
+        onCollisionEnter={({ other }) => handleCollisionEnter(other)}
+        position={[init.x, -0.6, init.z]}
+      >
+        <group dispose={null}>
           <group position={[0, 3.228, 0]} rotation={[-Math.PI / 2, 0, Math.PI]}>
             <mesh
               castShadow

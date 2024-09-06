@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
@@ -33,6 +33,7 @@ const isCloseToZero = (value: number): boolean => {
 export default function BB8() {
   //get robot data from context and rerender ---------------------------------
   const robot = useRobots().find((robot) => Number(robot.id) === 2)
+  const [init] = useState({ x: robot!.pose_x, z: robot!.pose_z })
   const socket = useWebSocket()
 
   const rigidBodyRef = useRef<RapierRigidBody>(null)
@@ -61,13 +62,11 @@ export default function BB8() {
         angle,
       })
     )
-    console.log('BB8 collision')
   }
 
   useFrame(({ clock }) => {
     if (!rotativObject.current || !rigidBodyRef.current || !robot) return
     const currentPosition = rigidBodyRef.current.translation()
-
     const dx = currentPosition.x - robot.pose_x
     const dz = currentPosition.z - robot.pose_z
 
@@ -81,54 +80,58 @@ export default function BB8() {
     rigidBodyRef.current.setRotation(quaternion, true)
 
     if (!isCloseToZero(dz) || !isCloseToZero(dx)) rotativObject.current.rotation.y = robot.angle
-    rigidBodyRef.current.setTranslation({ x: robot.pose_x, y: 0, z: robot.pose_z }, true)
+    rigidBodyRef.current.setTranslation({ x: robot.pose_x, y: 0.45, z: robot.pose_z }, true)
   })
 
   return (
-    <group>
-      <RigidBody ref={rigidBodyRef} colliders="hull" onCollisionEnter={({ other }) => handleCollisionEnter(other)}>
-        <group dispose={null} scale={[0.8, 0.8, 0.8]} position={[0, 0.45, 0]}>
-          <group name="root">
-            <group name="GLTF_SceneRootNode">
-              <group name="Cuerpo_1" ref={rotativObject}>
+    <RigidBody
+      ref={rigidBodyRef}
+      colliders="hull"
+      onCollisionEnter={({ other }) => handleCollisionEnter(other)}
+      position={[init.x, 0.45, init.z]}
+      scale={[0.8, 0.8, 0.8]}
+    >
+      <group dispose={null}>
+        <group name="root">
+          <group name="GLTF_SceneRootNode">
+            <group name="Cuerpo_1" ref={rotativObject}>
+              <mesh
+                name="Object_4"
+                castShadow
+                receiveShadow
+                geometry={nodes.Object_4.geometry}
+                material={materials.Material}
+              />
+            </group>
+            <group name="Cabeza_3" rotation={[-Math.PI, 0.39, -Math.PI]}>
+              <mesh
+                name="Object_6"
+                castShadow
+                receiveShadow
+                geometry={nodes.Object_6.geometry}
+                material={materials['Material.001']}
+              />
+              <group name="opticos_2" position={[-0.194, 1.141, -0.468]} rotation={[2.639, -0.346, 2.957]}>
                 <mesh
-                  name="Object_4"
+                  name="Object_8"
                   castShadow
                   receiveShadow
-                  geometry={nodes.Object_4.geometry}
-                  material={materials.Material}
+                  geometry={nodes.Object_8.geometry}
+                  material={materials.lentes}
                 />
-              </group>
-              <group name="Cabeza_3" rotation={[-Math.PI, 0.39, -Math.PI]}>
                 <mesh
-                  name="Object_6"
+                  name="Object_9"
                   castShadow
                   receiveShadow
-                  geometry={nodes.Object_6.geometry}
-                  material={materials['Material.001']}
+                  geometry={nodes.Object_9.geometry}
+                  material={materials.plastico}
                 />
-                <group name="opticos_2" position={[-0.194, 1.141, -0.468]} rotation={[2.639, -0.346, 2.957]}>
-                  <mesh
-                    name="Object_8"
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.Object_8.geometry}
-                    material={materials.lentes}
-                  />
-                  <mesh
-                    name="Object_9"
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.Object_9.geometry}
-                    material={materials.plastico}
-                  />
-                </group>
               </group>
             </group>
           </group>
         </group>
-      </RigidBody>
-    </group>
+      </group>
+    </RigidBody>
   )
 }
 

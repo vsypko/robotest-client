@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { useFrame } from '@react-three/fiber'
@@ -23,6 +23,7 @@ export default function R2D2() {
 
   //get robot data from context and rerender ---------------------------------
   const robot = useRobots().find((robot) => Number(robot.id) === 1)
+  const [init] = useState({ x: robot!.pose_x, z: robot!.pose_z })
   const socket = useWebSocket()
 
   const handleCollisionEnter = (other: CollisionTarget) => {
@@ -53,14 +54,20 @@ export default function R2D2() {
     if (rigidBodyRef.current && robot) {
       const quaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, robot.angle, 0))
       rigidBodyRef.current.setRotation(quaternion, true)
-      rigidBodyRef.current.setTranslation({ x: robot.pose_x, y: 0, z: robot.pose_z }, true)
+      rigidBodyRef.current.setTranslation({ x: robot.pose_x, y: -0.55, z: robot.pose_z }, true)
     }
   })
 
   return (
     <group>
-      <RigidBody ref={rigidBodyRef} colliders="hull" onCollisionEnter={({ other }) => handleCollisionEnter(other)}>
-        <group dispose={null} scale={[4, 4, 4]} position={[0, -0.55, 0]}>
+      <RigidBody
+        ref={rigidBodyRef}
+        colliders="hull"
+        onCollisionEnter={({ other }) => handleCollisionEnter(other)}
+        scale={[4, 4, 4]}
+        position={[init.x, -0.55, init.z]}
+      >
+        <group dispose={null}>
           <mesh
             castShadow
             receiveShadow
