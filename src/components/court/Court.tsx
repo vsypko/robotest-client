@@ -27,8 +27,8 @@ export default function Court() {
           <Field />
           {activeRobots &&
             activeRobots.map((robot) => (
-              <Suspense fallback={null}>
-                <Robot robot={robot.name} key={robot.id} />
+              <Suspense fallback={null} key={robot.id}>
+                <Robot robot={robot.name} />
               </Suspense>
             ))}
         </Physics>
