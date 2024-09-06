@@ -25,7 +25,6 @@ export default function Court() {
       <Suspense fallback={null}>
         <Physics gravity={[0, 0, 0]}>
           <Field />
-
           {activeRobots &&
             activeRobots.map((robot) => (
               <Suspense fallback={null}>
