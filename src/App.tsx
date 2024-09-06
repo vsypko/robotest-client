@@ -34,7 +34,7 @@ function App() {
         </div>
 
         <div className="md:hidden flex justify-center bg-none">
-          <MobileView missions={missions} setMissions={setMissions} robots={robots} />
+          <MobileView missions={missions} setMissions={setMissions} robots={robots} setRobots={setRobots} />
           <Joystick missions={missions} />
         </div>
       </div>
