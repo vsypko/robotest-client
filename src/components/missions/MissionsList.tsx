@@ -52,6 +52,7 @@ export function MissionsList({
     const isRobotOnZero = activeRobots.some((robot) => Math.abs(robot.pose_x) <= 1 && Math.abs(robot.pose_z) <= 1)
     const activeRobot = activeRobots.find((robot) => robot.id === mission.robot_id)
     const robot = getMissionRobot(mission)
+    console.log(robot?.name)
 
     if (status && activeRobot) {
       dispatch({ type: 'remove', payload: activeRobot })
@@ -62,8 +63,11 @@ export function MissionsList({
       return
     }
     if (!status && activeRobot) return setIsBusy(true)
-    if (!status && !activeRobot && isRobotOnZero) return setIsInZero(true)
-    if (robot) dispatch({ type: 'add', payload: robot })
+
+    if (robot) {
+      if (isRobotOnZero && robot.pose_x === 0 && robot.pose_z === 0) return setIsInZero(true)
+      dispatch({ type: 'add', payload: robot })
+    }
     setMissions(missions.map((item) => ({ ...item, active: item.id === mission.id ? !status : item.active })))
   }
 
